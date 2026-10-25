@@ -169,7 +169,7 @@ body{
 }
 
 
-/* v0.6.1: illustrated welcome experience */
+/* v0.6.3: illustrated welcome and celebratory transitions */
 .welcome-hero{position:relative;isolation:isolate;overflow:hidden;display:grid;grid-template-columns:minmax(0,1.12fr) minmax(260px,.88fr);align-items:center;gap:20px;min-height:300px;margin:0 0 28px;padding:30px 34px;border:1px solid #e7e4d5;border-radius:28px;background:radial-gradient(circle at 85% 20%,rgba(255,255,255,.92),transparent 24%),linear-gradient(118deg,#fff9e9 0%,#f3f5e6 54%,#e5f1e4 100%);box-shadow:0 14px 36px rgba(34,76,54,.07)}
 .welcome-copy{position:relative;z-index:2;max-width:540px}.welcome-pill{display:inline-flex;align-items:center;gap:7px;padding:7px 11px;border:1px solid #dce8d5;border-radius:999px;background:rgba(255,255,255,.72);color:#427a58;font-size:9px;font-weight:800;letter-spacing:1.2px}.welcome-copy h1{margin:17px 0 11px;font-size:clamp(28px,3.3vw,43px);line-height:1.12;letter-spacing:-1.6px;color:#194b39;font-weight:800}.welcome-copy h1 em{font-family:'Amiri',serif;font-size:1.14em;color:#2e805b;font-style:normal;letter-spacing:-.6px}.welcome-copy>p{max-width:410px;color:#687b6d;font-size:13px;line-height:1.8;margin:0}.welcome-actions{display:flex;align-items:center;gap:15px;flex-wrap:wrap;margin-top:22px}.welcome-actions .button-primary{border-radius:999px;padding:12px 19px;box-shadow:0 7px 16px rgba(31,91,61,.18);transition:transform .2s,box-shadow .2s}.welcome-actions .button-primary:hover{transform:translateY(-3px);box-shadow:0 10px 20px rgba(31,91,61,.22)}.welcome-actions .button-primary span{margin-left:10px}.welcome-note{font-size:10px;color:#758c78}.welcome-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:23px}.welcome-tags span{padding:7px 10px;border:1px solid rgba(209,224,205,.9);border-radius:999px;background:rgba(255,255,255,.58);font-size:10px;color:#54745e}.welcome-art{position:relative;display:flex;align-items:center;justify-content:center;min-height:240px;align-self:stretch}.welcome-art img{position:relative;z-index:1;width:min(100%,340px);height:auto;filter:drop-shadow(0 13px 12px rgba(43,83,56,.13));animation:mascotFloat 4s ease-in-out infinite}.mascot-bubble{position:absolute;z-index:2;right:0;top:23px;padding:12px 16px;border:1px solid #f0dfb8;border-radius:18px 18px 4px 18px;background:#fffdf5;color:#4b6f50;font-size:11px;font-weight:700;box-shadow:0 8px 18px rgba(82,91,55,.08);animation:bubbleFloat 3.4s ease-in-out infinite}.mascot-bubble span{color:#e4a35d;margin-left:5px}.floating-book{position:absolute;z-index:2;left:0;bottom:18px;padding:11px 15px;border:1px solid #d9e8d6;border-radius:12px;background:rgba(255,255,255,.85);color:#2b6749;font-family:'Amiri',serif;font-size:17px;box-shadow:0 7px 18px rgba(53,93,61,.09);transform:rotate(-5deg)}.art-spark{position:absolute;z-index:1;color:#d9a849;font-size:25px;animation:sparkle 2.6s ease-in-out infinite}.spark-one{left:13%;top:20%}.spark-two{right:12%;bottom:20%;color:#70ad83;animation-delay:.7s}.art-orbit{position:absolute;border:1px dashed rgba(93,151,106,.28);border-radius:50%;width:245px;height:245px}.orbit-two{width:190px;height:190px;border-style:solid;opacity:.5}.hero-leaf{position:absolute;z-index:-1;color:#8dbd8c;opacity:.18;font-size:100px;line-height:1}.leaf-one{left:-12px;bottom:-23px;transform:rotate(-20deg)}.leaf-two{right:36%;top:-35px;font-size:70px;transform:rotate(17deg)}
 @keyframes mascotFloat{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-7px) rotate(.6deg)}}@keyframes bubbleFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}@keyframes sparkle{0%,100%{transform:scale(.85) rotate(0);opacity:.65}50%{transform:scale(1.15) rotate(12deg);opacity:1}}
@@ -177,3 +177,50 @@ body{
 @media(max-width:900px){.welcome-hero{grid-template-columns:minmax(0,1fr) minmax(210px,.75fr);padding:25px;gap:10px}.welcome-art{min-height:210px}.welcome-copy h1{font-size:32px}.welcome-tags{gap:5px}.welcome-tags span{font-size:9px;padding:6px 8px}}
 @media(max-width:640px){.welcome-hero{grid-template-columns:1fr;padding:24px 20px 12px;border-radius:22px;gap:0}.welcome-copy h1{font-size:34px}.welcome-copy>p{font-size:12px}.welcome-art{min-height:220px;margin-top:4px}.welcome-art img{width:min(78%,290px)}.mascot-bubble{right:2%;top:12px}.floating-book{left:3%;bottom:14px}.art-orbit{width:205px;height:205px}.orbit-two{width:160px;height:160px}.welcome-tags{margin-top:17px}.welcome-actions{margin-top:17px}}
 @media(prefers-reduced-motion:reduce){.welcome-art img,.mascot-bubble,.art-spark{animation:none!important}.stat-card,.lesson-card,.word-chip,.button-primary,.button-secondary{transition:none!important}}
+
+
+/* Celebration moments: a short, joyful transition between questions and lessons. */
+.celebration-backdrop{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;padding:20px;background:rgba(15,42,32,.48);backdrop-filter:blur(7px);animation:celebration-fade-in .22s ease both}
+.celebration-card{position:relative;isolation:isolate;overflow:hidden;width:min(100%,480px);padding:34px 30px 30px;text-align:center;border:1px solid rgba(255,255,255,.85);border-radius:30px;background:radial-gradient(circle at 50% 0%,#fff9e8 0,#fffdf7 45%,#edf7ef 100%);box-shadow:0 24px 90px rgba(10,40,29,.28);animation:celebration-pop .48s cubic-bezier(.18,.9,.24,1.2) both}
+.celebration-card:before,.celebration-card:after{content:"";position:absolute;z-index:-1;width:180px;height:180px;border-radius:50%;background:rgba(204,232,208,.48);filter:blur(2px)}
+.celebration-card:before{top:-95px;left:-75px}.celebration-card:after{right:-95px;bottom:-110px;background:rgba(250,224,166,.42)}
+.celebration-mascot{position:relative;display:flex;align-items:center;justify-content:center;width:124px;height:124px;margin:0 auto 14px;border-radius:50%;background:linear-gradient(145deg,#e4f2df,#fff2cf);box-shadow:inset 0 0 0 1px rgba(34,91,66,.08);animation:celebration-float 2.2s ease-in-out infinite}
+.celebration-mascot img{width:108px;height:108px;object-fit:contain;filter:drop-shadow(0 5px 5px rgba(24,62,44,.12))}
+.celebration-mascot span{position:absolute;right:-5px;bottom:2px;display:grid;place-items:center;width:42px;height:42px;border:3px solid #fffdf7;border-radius:50%;background:#f7d98c;font-size:21px;animation:celebration-twinkle 1.2s ease-in-out infinite}
+.celebration-eyebrow{margin:0 0 8px;color:#4b8769;font-size:10px;font-weight:850;letter-spacing:.16em}
+.celebration-card h2{margin:0;color:#174d3b;font-size:clamp(23px,5vw,31px);line-height:1.18;font-weight:850}
+.celebration-message{max-width:350px;margin:13px auto 0;color:#52685b;font-size:14px;line-height:1.7}
+.celebration-stars{margin:15px 0;color:#d7a53d;font-size:21px;letter-spacing:.25em;animation:celebration-twinkle 1.8s ease-in-out infinite}
+.celebration-continue{display:inline-flex;align-items:center;justify-content:center;min-height:46px;margin-top:3px;padding:0 25px;border:0;border-radius:999px;background:#185c43;color:white;font-weight:750;box-shadow:0 7px 0 #d0e3d2,0 10px 22px rgba(24,92,67,.18);cursor:pointer;transition:transform .18s ease,box-shadow .18s ease}
+.celebration-continue:hover{transform:translateY(-2px);box-shadow:0 9px 0 #d0e3d2,0 13px 25px rgba(24,92,67,.2)}
+.celebration-confetti{position:absolute;inset:0;pointer-events:none;color:#d5a33c}
+.celebration-confetti span{position:absolute;top:12%;left:12%;font-size:22px;animation:celebration-drift 2.8s ease-in-out infinite}
+.celebration-confetti span:nth-child(2){top:24%;left:auto;right:12%;color:#4c9b78;animation-delay:-.7s}
+.celebration-confetti span:nth-child(3){top:48%;left:7%;color:#e6b65b;animation-delay:-1.1s}
+.celebration-confetti span:nth-child(4){top:55%;left:auto;right:7%;color:#4c9b78;animation-delay:-1.7s}
+.celebration-confetti span:nth-child(5){top:75%;left:17%;color:#d88f74;animation-delay:-.4s}
+.celebration-confetti span:nth-child(6){top:72%;left:auto;right:18%;animation-delay:-1.4s}
+.celebration-confetti span:nth-child(7){top:10%;left:50%;color:#4c9b78;animation-delay:-.9s}
+@keyframes celebration-fade-in{from{opacity:0}to{opacity:1}}
+@keyframes celebration-pop{0%{opacity:0;transform:translateY(18px) scale(.88)}70%{transform:translateY(-3px) scale(1.015)}100%{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes celebration-float{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-6px) rotate(1deg)}}
+@keyframes celebration-twinkle{0%,100%{transform:scale(1) rotate(-5deg)}50%{transform:scale(1.12) rotate(7deg)}}
+@keyframes celebration-drift{0%,100%{transform:translateY(0) rotate(0deg);opacity:.7}50%{transform:translateY(-10px) rotate(15deg);opacity:1}}
+@media(max-width:480px){.celebration-card{padding:28px 20px 24px;border-radius:25px}.celebration-mascot{width:106px;height:106px}.celebration-mascot img{width:92px;height:92px}.celebration-message{font-size:13px}}
+@media(prefers-reduced-motion:reduce){.celebration-backdrop,.celebration-card,.celebration-mascot,.celebration-mascot span,.celebration-stars,.celebration-confetti span{animation:none!important}.celebration-continue{transition:none!important}}
+
+
+/* Transisi ketika soal berganti: masuk lembut dari bawah dengan sedikit efek pop. */
+.question-transition{animation:question-enter .52s cubic-bezier(.2,.8,.2,1) both;transform-origin:50% 20%}
+@keyframes question-enter{0%{opacity:0;transform:translateY(16px) scale(.985);filter:blur(2px)}65%{opacity:1;transform:translateY(-2px) scale(1.003);filter:blur(0)}100%{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}}
+.celebration-confetti span{animation-name:confetti-dance;animation-duration:2.5s;animation-timing-function:ease-in-out;animation-iteration-count:infinite}
+.celebration-confetti span:nth-child(8){top:18%;left:25%;color:#e5a94d;animation-delay:-.3s}
+.celebration-confetti span:nth-child(9){top:34%;left:35%;color:#62aa80;animation-delay:-1.4s}
+.celebration-confetti span:nth-child(10){top:62%;left:28%;color:#d88f74;animation-delay:-.8s}
+.celebration-confetti span:nth-child(11){top:15%;left:auto;right:28%;color:#e5a94d;animation-delay:-1.8s}
+.celebration-confetti span:nth-child(12){top:43%;left:auto;right:30%;color:#62aa80;animation-delay:-.5s}
+.celebration-confetti span:nth-child(13){top:83%;left:38%;color:#d88f74;animation-delay:-1.2s}
+.celebration-confetti span:nth-child(14){top:84%;left:auto;right:35%;color:#62aa80;animation-delay:-.9s}
+.celebration-confetti span:nth-child(15){top:30%;left:16%;color:#e5a94d;animation-delay:-1.6s}
+@keyframes confetti-dance{0%,100%{transform:translate3d(0,8px,0) rotate(-12deg) scale(.82);opacity:.45}50%{transform:translate3d(0,-18px,0) rotate(20deg) scale(1.25);opacity:1}}
+@media(prefers-reduced-motion:reduce){.question-transition{animation:none!important}.celebration-confetti span{animation:none!important}}

@@ -105,3 +105,10 @@ Jangan bagikan service-role key atau Resend API key. Pastikan domain pengirim te
 - Desain, autentikasi, panel guru/admin, dan konfigurasi Supabase dipertahankan.
 
 Catatan validasi: dependensi npm tidak dapat diinstal dalam sesi pembuatan ini karena proses instalasi melewati batas waktu, sehingga build Next.js belum dapat dijalankan di sini.
+
+
+## v0.6.3 — Animasi transisi belajar
+
+- Kartu soal masuk dengan transisi lembut setiap kali berpindah soal atau materi.
+- Momen keberhasilan menampilkan maskot, konfeti tambahan, dan pesan penyemangat.
+- Animasi menghormati pengaturan `prefers-reduced-motion` pada perangkat pengguna.
