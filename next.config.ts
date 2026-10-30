@@ -1,7 +1,4 @@
 import type { NextConfig } from 'next';
-
-const nextConfig: NextConfig = {
-  // The first version is a client-side learning prototype; no server secrets are needed.
-};
-
+// Credentials for server routes are supplied through Vercel Environment Variables.
+const nextConfig: NextConfig = {};
 export default nextConfig;

@@ -23,3 +23,4 @@ export async function sendTransactionalEmail(input: SendEmailInput): Promise<{ o
     return { ok: false, error: 'Tidak dapat menghubungi layanan email. Coba lagi nanti.' };
   }
 }
+

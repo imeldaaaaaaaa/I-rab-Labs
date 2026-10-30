@@ -223,3 +223,4 @@ using (student_id = auth.uid() or public.current_app_role() = 'admin' or exists 
 -- Invitation table intentionally has NO client policies. Create/redeem invites only in trusted server routes
 -- using the service-role key, after verifying the caller is an admin and hashing the one-time token.
 -- Likewise, trusted server routes/RPCs must validate answers and calculate score/unlock state before writing attempts/progress.
+

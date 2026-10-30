@@ -124,3 +124,4 @@ export async function POST(request: Request) {
 
   return NextResponse.json({ ok: true, status: 'approved', emailSent: true, expiresAt });
 }
+

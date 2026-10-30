@@ -722,3 +722,4 @@ export const wordKinds: WordKind[] = ['Isim', 'Fi‘il', 'Huruf'];
 export const positions: Position[] = [...new Set(exercises.flatMap(e => e.words.map(w => w.position)))].sort();
 export const caseStates: CaseState[] = ['Marfū‘', 'Manṣūb', 'Majrūr', 'Majzūm', 'Mabnī', 'Tidak berlaku'];
 export const signs: Sign[] = ['Ḍammah', 'Fatḥah', 'Kasrah', 'Sukūn', 'Alif', 'Wāw', 'Yā’', 'Mabnī', 'Tidak berlaku'];
+

@@ -33,3 +33,4 @@ export async function POST(request: Request) {
   // Return the raw code only once; email delivery can be added as a separate trusted service.
   return NextResponse.json({ email, role, code, expiresInDays });
 }
+

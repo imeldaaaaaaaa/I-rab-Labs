@@ -1,13 +1,15 @@
 {
   "name": "bedah-irab",
-  "version": "0.5.1",
+  "version": "0.7.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:curriculum": "node scripts/check-curriculum.mjs",
+    "test:database": "node scripts/check-database.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.57.0",
@@ -21,6 +23,11 @@
     "@types/react-dom": "^19.0.0",
     "eslint": "^9.0.0",
     "eslint-config-next": "15.5.28",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "@eslint/eslintrc": "^3.3.1",
+    "@electric-sql/pglite": "^0.5.4"
+  },
+  "engines": {
+    "node": ">=20.9.0"
   }
 }

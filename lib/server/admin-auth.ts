@@ -1,9 +1,9 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
 export type AdminContext = {
   userId: string;
   email: string;
-  admin: ReturnType<typeof createClient<any>>;
+  admin: SupabaseClient;
 };
 
 export async function requireAdmin(request: Request): Promise<AdminContext | Response> {
@@ -21,7 +21,7 @@ export async function requireAdmin(request: Request): Promise<AdminContext | Res
   const { data: { user }, error } = await authClient.auth.getUser(bearer);
   if (error || !user) return Response.json({ error: 'Sesi login tidak valid.' }, { status: 401 });
 
-  const admin = createClient<any>(url, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
+  const admin = createClient(url, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
   const { data: profile, error: profileError } = await admin.from('profiles').select('role').eq('id', user.id).maybeSingle();
   if (profileError || profile?.role !== 'admin') {
     return Response.json({ error: 'Hanya admin yang dapat melakukan tindakan ini.' }, { status: 403 });
@@ -32,3 +32,4 @@ export async function requireAdmin(request: Request): Promise<AdminContext | Res
 export function isResponse(value: AdminContext | Response): value is Response {
   return value instanceof Response;
 }
+

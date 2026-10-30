@@ -224,3 +224,17 @@ body{
 .celebration-confetti span:nth-child(15){top:30%;left:16%;color:#e5a94d;animation-delay:-1.6s}
 @keyframes confetti-dance{0%,100%{transform:translate3d(0,8px,0) rotate(-12deg) scale(.82);opacity:.45}50%{transform:translate3d(0,-18px,0) rotate(20deg) scale(1.25);opacity:1}}
 @media(prefers-reduced-motion:reduce){.question-transition{animation:none!important}.celebration-confetti span{animation:none!important}}
+
+
+/* v0.7 — review, synced progress, and feedback */
+.learning-status,.review-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:16px 0;color:#526259;font-size:14px}
+.question-numbers{display:flex;gap:8px;flex-wrap:wrap}
+.question-current{outline:2px solid #258969;outline-offset:2px}
+.review-answer{padding:16px;background:#f4f8f2;border:1px solid #d5e3d5;border-radius:16px;margin-top:16px;min-width:0}
+.review-answer h3{margin:0 0 12px}.review-answer p{line-height:1.7}.review-answer .table-wrap{margin:12px 0}.review-answer table{min-width:0;width:100%}.review-answer th,.review-answer td{padding:10px 8px;white-space:normal;overflow-wrap:anywhere}
+.student-detail,.feedback-admin{margin-top:32px;padding-top:24px;border-top:1px solid #e2e9e1}
+.feedback-list{display:grid;gap:16px}.feedback-message{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.7}.feedback-admin select{padding:8px;border:1px solid #b8cabc;border-radius:8px;background:white}
+button.topic-practice{font:inherit;width:100%;text-align:left;cursor:pointer}button:disabled{cursor:not-allowed;opacity:.55}.content-panel>p{line-height:1.7}.login-modal .notice{font-size:13px}
+@media(max-width:600px){.review-nav{align-items:flex-start}.review-nav>.button-secondary{font-size:12px}.review-answer{padding:12px}.question-numbers{gap:6px}.section-heading{flex-wrap:wrap;gap:12px}}
+.question-numbers .button-secondary{width:auto;min-width:38px;flex:0 0 auto;padding:8px 12px}
+.lesson-card{min-width:0}.topic-practice span:first-child{white-space:normal;line-height:1.5}
