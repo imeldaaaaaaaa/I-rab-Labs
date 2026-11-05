@@ -28,3 +28,20 @@ Sebelum deployment, jalankan migrasi Supabase v0.8.3, unggah isi project ke repo
 Log Vercel menunjukkan satu kegagalan ESLint pada `app/api/question-analytics/route.ts` baris 27: penggunaan explicit `any` memicu aturan `@typescript-eslint/no-explicit-any`. Kode tersebut telah diperbaiki dengan memberi tipe `ProgressRow[]` pada hasil query sebelum memfilter berdasarkan ID siswa. Pemeriksaan sintaks TypeScript/TSX setelah perbaikan: 20 file, 0 kesalahan sintaks.
 
 Build produksi penuh tetap perlu dikonfirmasi oleh deployment Vercel berikutnya.
+
+
+## Redesign visual v0.9.0
+- Tampilan Fantasy Adventure dan maskot burung hantu ditambahkan tanpa mengubah nama atau urutan materi.
+- XP/level dihitung dari status kata benar yang sudah tersimpan; tidak ada tabel gamifikasi baru.
+- `npm run test:curriculum`: PASS (23 topik, 69 soal, 219 unsur kata, aturan nilai 80%).
+- Syntax check TypeScript/TSX: 20 file, 0 kesalahan sintaks.
+- Build produksi penuh masih harus dikonfirmasi pada Vercel.
+
+
+## Redesign eksplorasi v0.9.1
+- Peta Dunia Nahwu dengan 5 wilayah dan jalur batu ditambahkan.
+- Setiap rumah mewakili bab; level di dalam rumah mewakili subbab.
+- Navigasi level memakai progres tersimpan dan melanjutkan dari kata pertama yang belum selesai.
+- `npm run test:curriculum`: PASS — 23 topik, 69 soal, 219 unsur kata, aturan nilai 80%.
+- Syntax check TypeScript/TSX: 20 file, 0 kesalahan sintaks.
+- Build produksi Next.js tetap perlu dikonfirmasi melalui deployment Vercel.

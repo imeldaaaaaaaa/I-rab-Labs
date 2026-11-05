@@ -46,3 +46,22 @@ Isi environment variables Supabase pada Vercel sesuai `MULAI_DI_SINI.md`. Jangan
 - Statistik soal dihitung dari status terakhir yang tersimpan untuk setiap unsur kata per siswa. Persentase berhasil pada satu soal berarti persentase siswa yang pernah mencoba dan status terakhir seluruh unsur jawabannya benar.
 - Data statistik baru muncul setelah siswa mengerjakan soal pada versi `v083` dan jawaban tersinkron ke Supabase.
 - Bank soal dan kunci perlu ditinjau pengajar Nahwu sebelum digunakan sebagai asesmen formal.
+
+
+## UI v0.9.0 — Fantasy Adventure
+- Tampilan petualangan dengan maskot burung hantu, peta materi, dan kartu level.
+- Nama kelompok materi dan submateri tetap menggunakan istilah Nahwu asli; tidak diganti menjadi nama fantasi.
+- XP dan level dihitung dari penyelesaian kata yang sudah tersimpan (10 XP per kata; 250 XP per level).
+- Tidak ada migrasi database untuk redesign visual ini.
+- Detail perubahan dan pemasangan: `ADVENTURE-REDESIGN.md`.
+
+
+## UI v0.9.1 — Dunia Nahwu
+- Peta eksplorasi dengan jalur batu, rintangan batu, sungai, pepohonan, dan wilayah yang dapat dipilih.
+- Bab ditampilkan sebagai Wilayah; subbab ditampilkan sebagai level di dalam rumah.
+- Memasuki level akan melanjutkan dari kata yang belum selesai. Level yang sudah selesai tidak dipaksa untuk diulang.
+- Aturan kelulusan 80%, nama materi, bank soal, autentikasi, dan database tetap dipertahankan.
+
+
+## UI v0.9.3 — Ikon landmark wilayah
+Ikon rumah pada peta petualangan diganti dengan emblem landmark fantasi yang berbeda untuk tiap wilayah. Struktur pembelajaran dan data progres tetap dipertahankan.
