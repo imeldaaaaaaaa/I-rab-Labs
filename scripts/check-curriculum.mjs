@@ -14,9 +14,9 @@ for(const [ti,t] of c.topics.entries()){
  assert.equal(c.topicUnlocked(t,complete),true);
  if(ti+1<c.topics.length)assert.equal(c.topicUnlocked(c.topics[ti+1],complete),false);
  for(const [qi,q] of questions.entries()){
-  assert.equal(q.sentence,q.words.map(w=>w.token).join(' '));
+  assert.equal(q.sentence,q.words.map(w=>w.token).join(' '));for(const g of q.analysisGroups||[])assert.ok(g.indices.length&&g.indices.every(i=>Number.isInteger(i)&&i>=0&&i<q.words.length));
   for(const [i,w] of q.words.entries()){
-   assert.ok(w.explanation&&w.fullIrab);
+   assert.ok(w.explanation&&w.fullIrab&&w.hint);
    const answer=c.expectedAnswer(q,i);assert.equal(c.gradeAnswer(q,i,answer),true);
    assert.equal(c.gradeAnswer(q,i,{...answer,kind:''}),false);
    if(qi<3)complete.push(`${q.id}:${i}`);
@@ -24,6 +24,10 @@ for(const [ti,t] of c.topics.entries()){
  }
 }
 assert.equal(c.topicUnlocked('unknown',complete),false);
+const grouped=c.learningQuestions.find(q=>q.sentence.includes('عِنْدَ الْبَابِ'));
+assert.ok(grouped?.analysisGroups?.some(g=>g.indices.length===2&&g.functionLabel.includes('ẓarfiyyah')));
+const delayed=c.learningQuestions.find(q=>q.topic==='Khabar muqaddam dan mubtada’ mu’akhkhar');
+assert.ok(delayed?.analysisGroups?.some(g=>g.indices.length===2&&g.functionLabel.includes('muqaddam')));
 // Uji ambang kelulusan tepat 80% pada materi kedua yang memiliki 10 kata.
 const secondTopic=c.topics[1];
 const secondQuestions=c.learningQuestions.filter(q=>q.topic===secondTopic);

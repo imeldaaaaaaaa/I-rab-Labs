@@ -13,7 +13,7 @@ export async function POST(request:Request){
  const question=learningQuestions.find(q=>q.id===b.questionId),wi=b.wordIndex;
  if(!question||!Number.isInteger(wi)||wi<0||wi>=question.words.length||typeof b.eventId!=='string'||! /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(b.eventId)||!b.answer||typeof b.answer!=='object')return Response.json({error:'Soal atau jawaban tidak valid.'},{status:400});
  const answer:Answer={...blank};for(const k of Object.keys(blank) as (keyof Answer)[]){if(typeof b.answer[k]!=='string'||b.answer[k].length>120)return Response.json({error:'Format jawaban tidak valid.'},{status:400});Object.assign(answer,{[k]:b.answer[k]});}
- if(question.topic!==learningQuestions[0].topic){
+ if(ctx.profile.role==='student'&&question.topic!==learningQuestions[0].topic){
   const {data:done,error:readError}=await ctx.db.from('irab_word_progress').select('question_id,word_index').eq('student_id',ctx.user.id).eq('curriculum_version',CURRICULUM_VERSION).eq('completed',true);
   if(readError)return Response.json({error:'Progres belum dapat diperiksa.'},{status:500});
   if(!topicUnlocked(question.topic,(done||[]).map(r=>`${r.question_id}:${r.word_index}`)))return Response.json({error:'Selesaikan minimal 80% materi sebelumnya terlebih dahulu.'},{status:403});

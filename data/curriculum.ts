@@ -1,6 +1,6 @@
 import type { Exercise, WordAnalysis, CaseState, Sign, WordKind } from './exercises';
 
-export const CURRICULUM_VERSION = 'v082';
+export const CURRICULUM_VERSION = 'v083';
 export const lessonGroups = [
  {title:'Dasar-dasar kalimah',desc:'Kenali jenis kata dan sifatnya.',topics:['Isim, fi‘il, huruf','Mu‘rab dan mabnī','Ma‘rifah dan nakirah','Mufrad, mutsanna, jamak']},
  {title:'Jumlah ismiyyah',desc:'Susunan kalimat yang diawali isim.',topics:['Mubtada’ dan khabar','Khabar mufrad, jumlah, syibh jumlah','Khabar muqaddam dan mubtada’ mu’akhkhar','Kāna wa akhawātuhā','Inna wa akhawātuhā']},
@@ -10,19 +10,42 @@ export const lessonGroups = [
 ];
 export const topics = lessonGroups.flatMap(g=>g.topics);
 type Detail = { definiteness?: 'Ma‘rifah'|'Nakirah'|'Tidak berlaku'; number?: 'Mufrad'|'Tatsniyah'|'Jamak'|'Tidak berlaku' };
-export type LearningWord = WordAnalysis & Detail;
-export type LearningExercise = Omit<Exercise,'words'> & {words:LearningWord[]; difficulty:'Dasar'|'Menengah'|'Lanjutan'};
+export type LearningWord = WordAnalysis & Detail & {hint?:string};
+export type AnalysisGroup = {indices:number[];label:string;functionLabel:string;explanation:string;hint:string};
+export type LearningExercise = Omit<Exercise,'words'> & {words:LearningWord[]; difficulty:'Dasar'|'Menengah'|'Lanjutan';analysisGroups?:AnalysisGroup[]};
 const arPositions:Record<string,string> = {'Mubtada’':'مبتدأ','Mubtada’ mu’akhkhar':'مبتدأ مؤخر','Khabar':'خبر','Khabar muqaddam (syibh jumlah)':'خبر مقدم','Fā‘il':'فاعل','Nā’ib al-fā‘il':'نائب فاعل','Maf‘ūl bih':'مفعول به','Na‘t':'نعت','Ma‘ṭūf':'معطوف','Taukīd':'توكيد معنوي','Badal':'بدل','Muḍāf ilaih':'مضاف إليه','Isim كان':'اسم كان','Khabar كان':'خبر كان','Isim إنّ':'اسم إنّ','Khabar إنّ':'خبر إنّ','Maf‘ūl muṭlaq':'مفعول مطلق','Maf‘ūl li-ajlih':'مفعول لأجله','Ẓarf zamān':'ظرف زمان','Ẓarf makān':'ظرف مكان','Ḥāl':'حال','Tamyīz':'تمييز','Mustatsnā':'مستثنى','Munādā':'منادى'};
 const arStates:Record<string,string> = {'Marfū‘':'مرفوع','Manṣūb':'منصوب','Majrūr':'مجرور','Majzūm':'مجزوم'};
 const arSigns:Record<string,string> = {'Ḍammah':'الضمة','Fatḥah':'الفتحة','Kasrah':'الكسرة','Sukūn':'السكون','Alif':'الألف','Wāw':'الواو','Yā’':'الياء'};
+function contextualHint(kind:WordKind,position:string,token:string):string {
+ const hints:Record<string,string> = {
+  'Mubtada’':'Cari isim yang menjadi pokok pembicaraan. Biasanya ia berada di awal jumlah ismiyyah dan berstatus marfū‘.',
+  'Mubtada’ mu’akhkhar':'Jangan hanya melihat urutan kata. Cari isim nakirah yang menjadi pokok pembicaraan dan datang setelah khabar yang didahulukan.',
+  'Khabar':'Tentukan unsur yang memberi informasi tentang mubtada’. Khabar dapat berupa isim tunggal, jumlah, atau syibh jumlah.',
+  'Khabar muqaddam (syibh jumlah)':'Frasa ini mendahului mubtada’ mu’akhkhar. Tentukan dahulu fungsi seluruh frasa, baru lihat fungsi setiap kata di dalamnya.',
+  'Khabar muqaddam':'Perhatikan keterangan tempat yang diletakkan sebelum mubtada’ mu’akhkhar. Frasa tempat itu berfungsi sebagai khabar yang didahulukan.',
+  'Fā‘il':'Cari pihak yang melakukan pekerjaan. Fā‘il adalah isim marfū‘, meskipun tidak selalu tepat setelah fi‘il.',
+  'Maf‘ūl bih':'Cari unsur yang dikenai pekerjaan. Maf‘ūl bih pada umumnya berstatus manṣūb.',
+  'Muḍāf ilaih':'Perhatikan kata kedua dalam susunan idhafah. Kata ini melengkapi kepemilikan atau hubungan kata sebelumnya dan berstatus majrūr.',
+  'Isim majrūr':'Cari isim yang didahului huruf jar atau menjadi bagian dari susunan yang menuntut jar.',
+  'Ẓarf makān':'Kata ini menunjukkan tempat. Periksa apakah ia berfungsi sebagai keterangan tempat (manṣūb) dan menjadi muḍāf bagi kata sesudahnya.',
+  'Khabar كان':'Ingat bahwa kāna merafa‘kan isimnya dan menaṣabkan khabarnya. Khabar juga dapat berupa syibh jumlah.',
+  'Isim كان':'Cari isim yang diterangkan oleh kāna. Isim kāna tetap marfū‘.',
+  'Isim إنّ':'إِنَّ dan saudara-saudaranya menashabkan isimnya. Perhatikan kata yang menjadi pokok pembicaraan setelah huruf nāsikh.',
+  'Khabar إنّ':'Khabar إنّ tetap marfū‘. Bentuknya dapat berupa isim, jumlah, atau syibh jumlah.'
+ };
+ if(hints[position])return hints[position];
+ if(kind==='Huruf')return `Perhatikan fungsi huruf ${token} terhadap kata atau susunan sesudahnya. Huruf bersifat mabnī dan tidak memiliki tanda i‘rab seperti isim.`;
+ if(kind==='Fi‘il')return `Kenali bentuk ${token}: apakah fi‘il māḍī, muḍāri‘, atau amr. Setelah itu perhatikan amil yang memengaruhi akhirnya.`;
+ return `Perhatikan hubungan ${token} dengan kata sebelum dan sesudahnya. Tentukan fungsi nahwunya terlebih dahulu, kemudian status dan tanda i‘rabnya.`;
+}
 function noun(token:string,position:string,state:CaseState='Marfū‘',sign:Sign='Ḍammah',extra:Detail={},note=''):LearningWord {
- return {token,kind:'Isim',position,state,sign,...extra,explanation:`${token} berkedudukan sebagai ${position}, ${state} dengan tanda ${sign}. ${note}`.trim(),fullIrab:`${token}: ${arPositions[position]||position} ${arStates[state]||state}، وعلامة إعرابه ${arSigns[sign]||sign}.`};
+ return {token,kind:'Isim',position,state,sign,...extra,hint:contextualHint('Isim',position,token),explanation:`${token} berkedudukan sebagai ${position}, ${state} dengan tanda ${sign}. ${note}`.trim(),fullIrab:`${token}: ${arPositions[position]||position} ${arStates[state]||state}، وعلامة إعرابه ${arSigns[sign]||sign}.`};
 }
 function verb(token:string,tense:'past'|'present'|'command'='past',state:CaseState=tense==='present'?'Marfū‘':'Mabnī',sign:Sign=tense==='present'?'Ḍammah':tense==='command'?'Sukūn':'Fatḥah',note=''):LearningWord {
  const position=['كَانَ','أَصْبَحَ','صَارَ','لَيْسَ','ظَلَّ'].includes(token)?'Fi‘il nāqiṣ':tense==='past'?'Fi‘il māḍī':tense==='command'?'Fi‘il amr':'Fi‘il muḍāri‘';
- return {token,kind:'Fi‘il',position,state,sign,explanation:`${token} adalah ${position}; ${state} dengan ${sign}. ${note}`.trim(),fullIrab:`${token}: فعل ${tense==='past'?'ماض':tense==='command'?'أمر':'مضارع'} ${state==='Mabnī'?'مبني على '+arSigns[sign]:arStates[state]+' وعلامة إعرابه '+arSigns[sign]}.`};
+ return {token,kind:'Fi‘il',position,state,sign,hint:contextualHint('Fi‘il',position,token),explanation:`${token} adalah ${position}; ${state} dengan ${sign}. ${note}`.trim(),fullIrab:`${token}: فعل ${tense==='past'?'ماض':tense==='command'?'أمر':'مضارع'} ${state==='Mabnī'?'مبني على '+arSigns[sign]:arStates[state]+' وعلامة إعرابه '+arSigns[sign]}.`};
 }
-function particle(token:string,position:string,note=''):LearningWord {return {token,kind:'Huruf',position,state:'Tidak berlaku',sign:'Tidak berlaku',explanation:`${token} adalah ${position}; huruf mabnī dan tidak mempunyai محل i‘rab. ${note}`.trim(),fullIrab:`${token}: حرف مبني لا محل له من الإعراب.`};}
+function particle(token:string,position:string,note=''):LearningWord {return {token,kind:'Huruf',position,state:'Tidak berlaku',sign:'Tidak berlaku',hint:contextualHint('Huruf',position,token),explanation:`${token} adalah ${position}; huruf mabnī dan tidak mempunyai محل i‘rab. ${note}`.trim(),fullIrab:`${token}: حرف مبني لا محل له من الإعراب.`};}
 const n=noun,v=verb,h=particle;
 type Row = [string,LearningWord[]];
 const rows:Row[][] = [
@@ -203,7 +226,8 @@ rows[18][4]=['Pelajar itu menulis dengan pena.',[v('كَتَبَ'),n('الطَّ
 // syibh jumlah, serta susunan taqdim/ta'khir sesuai fokus kaidah.
 function demonstrative(token:string):LearningWord {
  return {
-  token,kind:'Isim',position:'Mubtada’',state:'Mabnī',sign:'Sukūn',
+  token,kind:'Isim',position:'Mubtada’',state:'Mabnī',sign:'Sukūn',definiteness:'Ma‘rifah',
+  hint:'Isim isyarah termasuk isim mabnī. Perhatikan bahwa bentuk akhirnya tetap, tetapi kedudukannya dalam kalimat dapat menempati محل رفع sebagai mubtada’.',
   explanation:`${token} adalah isim isyarah mabni 'ala as-sukun yang menempati محل رفع sebagai mubtada’.`,
   fullIrab:`${token}: اسْمُ إِشَارَةٍ مَبْنِيٌّ عَلَى السُّكُونِ فِي مَحَلِّ رَفْعٍ مُبْتَدَأٌ.`
  };
@@ -237,7 +261,7 @@ const curatedSets:Row[][] = [
  [
   ['Rumah itu besar.',[n('الْبَيْتُ','Mubtada’'),n('كَبِيرٌ','Khabar')]],
   ['Siswa itu membaca pelajaran.',[n('الطَّالِبُ','Mubtada’'),v('يَقْرَأُ','present','Marfū‘','Ḍammah','Jumlah fi‘liyyah يَقْرَأُ الدَّرْسَ menjadi khabar bagi mubtada’.'),n('الدَّرْسَ','Maf‘ūl bih','Manṣūb','Fatḥah')]],
-  ['Siswa itu berada di dekat pintu.',[n('الطَّالِبُ','Mubtada’'),n('عِنْدَ','Khabar','Manṣūb','Fatḥah',{},'Zarf makān menjadi khabar dan sekaligus mudhaf.'),n('الْبَابِ','Muḍāf ilaih','Majrūr','Kasrah')]]
+  ['Siswa itu berada di dekat pintu.',[n('الطَّالِبُ','Mubtada’'),n('عِنْدَ','Ẓarf makān','Manṣūb','Fatḥah',{},'Ẓarf makān yang menjadi muḍāf; bersama الْبَابِ membentuk syibh jumlah ẓarfiyyah sebagai khabar.'),n('الْبَابِ','Muḍāf ilaih','Majrūr','Kasrah')]]
  ],
  // 6. Khabar mufrad, jumlah, syibh jumlah: tiga bentuk khabar berbeda.
  [
@@ -247,20 +271,20 @@ const curatedSets:Row[][] = [
  ],
  // 7. Khabar muqaddam dan mubtada mu'akhkhar: variasi syibh jumlah dan zarf.
  [
-  ['Di dalam kelas ada seorang siswa.',[h('فِي','Khabar muqaddam (syibh jumlah)'),n('الْفَصْلِ','Isim majrūr','Majrūr','Kasrah'),n('طَالِبٌ','Mubtada’ mu’akhkhar','Marfū‘','Ḍammah',{definiteness:'Nakirah'})]],
-  ['Di atas meja ada sebuah buku.',[h('عَلَى','Khabar muqaddam (syibh jumlah)'),n('الْمَكْتَبِ','Isim majrūr','Majrūr','Kasrah'),n('كِتَابٌ','Mubtada’ mu’akhkhar','Marfū‘','Ḍammah',{definiteness:'Nakirah'})]],
-  ['Di depan sekolah ada sebuah bus.',[n('أَمَامَ','Khabar muqaddam','Manṣūb','Fatḥah',{},'Zarf makān yang didahulukan sebagai khabar dan sekaligus mudhaf.'),n('الْمَدْرَسَةِ','Muḍāf ilaih','Majrūr','Kasrah'),n('حَافِلَةٌ','Mubtada’ mu’akhkhar','Marfū‘','Ḍammah',{definiteness:'Nakirah'})]]
+  ['Di dalam kelas ada seorang siswa.',[h('فِي','Huruf jar'),n('الْفَصْلِ','Isim majrūr','Majrūr','Kasrah'),n('طَالِبٌ','Mubtada’ mu’akhkhar','Marfū‘','Ḍammah',{definiteness:'Nakirah'})]],
+  ['Di atas meja ada sebuah buku.',[h('عَلَى','Huruf jar'),n('الْمَكْتَبِ','Isim majrūr','Majrūr','Kasrah'),n('كِتَابٌ','Mubtada’ mu’akhkhar','Marfū‘','Ḍammah',{definiteness:'Nakirah'})]],
+  ['Di depan sekolah ada sebuah bus.',[n('أَمَامَ','Ẓarf makān','Manṣūb','Fatḥah',{},'Zarf makān yang didahulukan sebagai khabar dan sekaligus mudhaf.'),n('الْمَدْرَسَةِ','Muḍāf ilaih','Majrūr','Kasrah'),n('حَافِلَةٌ','Mubtada’ mu’akhkhar','Marfū‘','Ḍammah',{definiteness:'Nakirah'})]]
  ],
  // 8. Kana wa akhawatuha: khabar mufrad, muqaddam, dan jumlah fi'liyyah.
  [
   ['Cuaca tadi dingin.',[v('كَانَ','past','Mabnī','Fatḥah','Fi‘il nāqiṣ; merafa‘kan isim dan menaṣabkan khabar.'),n('الْجَوُّ','Isim كان'),n('بَارِدًا','Khabar كان','Manṣūb','Fatḥah')]],
-  ['Di dalam kelas terdapat seorang siswa.',[v('كَانَ','past','Mabnī','Fatḥah','Fi‘il nāqiṣ.'),h('فِي','Khabar كان','Syibh jumlah فِي الْفَصْلِ menjadi khabar kāna yang didahulukan.'),n('الْفَصْلِ','Isim majrūr','Majrūr','Kasrah'),n('طَالِبٌ','Isim كان','Marfū‘','Ḍammah',{},'Isim kāna yang diakhirkan.')]],
+  ['Di dalam kelas terdapat seorang siswa.',[v('كَانَ','past','Mabnī','Fatḥah','Fi‘il nāqiṣ.'),h('فِي','Huruf jar','Bersama الْفَصْلِ membentuk khabar kāna yang didahulukan.'),n('الْفَصْلِ','Isim majrūr','Majrūr','Kasrah'),n('طَالِبٌ','Isim كان','Marfū‘','Ḍammah',{},'Isim kāna yang diakhirkan.')]],
   ['Siswa itu sedang menulis pelajaran.',[v('كَانَ','past','Mabnī','Fatḥah','Fi‘il nāqiṣ.'),n('الطَّالِبُ','Isim كان'),v('يَكْتُبُ','present','Marfū‘','Ḍammah','Fi‘il muḍāri‘; jumlah fi‘liyyah يَكْتُبُ الدَّرْسَ menjadi khabar kāna.'),n('الدَّرْسَ','Maf‘ūl bih','Manṣūb','Fatḥah')]]
  ],
  // 9. Inna wa akhawatuha: khabar mufrad, muqaddam, dan jumlah fi'liyyah.
  [
   ['Sesungguhnya ilmu itu bermanfaat.',[h('إِنَّ','Huruf nāsikh'),n('الْعِلْمَ','Isim إنّ','Manṣūb','Fatḥah'),n('نَافِعٌ','Khabar إنّ')]],
-  ['Sesungguhnya di dalam perpustakaan terdapat buku-buku.',[h('إِنَّ','Huruf nāsikh'),h('فِي','Khabar إنّ','Syibh jumlah sebagai khabar إنّ yang didahulukan.'),n('الْمَكْتَبَةِ','Isim majrūr','Majrūr','Kasrah'),n('كُتُبًا','Isim إنّ','Manṣūb','Fatḥah',{},'Isim إنّ yang diakhirkan.')]],
+  ['Sesungguhnya di dalam perpustakaan terdapat buku-buku.',[h('إِنَّ','Huruf nāsikh'),h('فِي','Huruf jar','Bersama الْمَكْتَبَةِ membentuk khabar إنّ yang didahulukan.'),n('الْمَكْتَبَةِ','Isim majrūr','Majrūr','Kasrah'),n('كُتُبًا','Isim إنّ','Manṣūb','Fatḥah',{},'Isim إنّ yang diakhirkan.')]],
   ['Sesungguhnya siswa itu membaca pelajaran.',[h('إِنَّ','Huruf nāsikh'),n('الطَّالِبَ','Isim إنّ','Manṣūb','Fatḥah'),v('يَقْرَأُ','present','Marfū‘','Ḍammah','Jumlah fi‘liyyah يَقْرَأُ الدَّرْسَ menjadi khabar إنّ.'),n('الدَّرْسَ','Maf‘ūl bih','Manṣūb','Fatḥah')]]
  ],
  // 10. Fi'il madhi, mudhari, amr: fi'liyyah, ismiyyah dengan khabar fi'liyyah, dan amr.
@@ -348,13 +372,74 @@ const curatedSets:Row[][] = [
   ['Wahai penuntut ilmu!',[h('يَا','Huruf nidā’'),n('طَالِبَ','Munādā','Manṣūb','Fatḥah',{},'Munādā muḍāf yang wajib manṣūb.'),n('الْعِلْمِ','Muḍāf ilaih','Majrūr','Kasrah')]]
  ]
 ];
+const groupDefinitions:Record<string,AnalysisGroup[]> = {
+ '0-2':[
+  {indices:[1,2],label:'Frasa khabar',functionLabel:'Khabar berupa syibh jumlah jar-majrūr',explanation:'فِي الْفَصْلِ menjadi satu kesatuan khabar yang menerangkan tempat guru berada. فِي adalah huruf jar dan الْفَصْلِ adalah isim majrūr.',hint:'Gabungkan huruf jar dengan isim sesudahnya. Seluruh frasa فِي الْفَصْلِ berfungsi sebagai khabar, bukan dua fungsi kalimat yang terpisah.'}
+ ],
+ '4-1':[
+  {indices:[1,2],label:'Jumlah fi‘liyyah sebagai khabar',functionLabel:'Khabar berupa jumlah fi‘liyyah',explanation:'يَقْرَأُ الدَّرْسَ adalah jumlah fi‘liyyah yang menempati محل رفع خبر. فاعل pada يَقْرَأُ berupa ḍamīr mustatir تقديره هو yang kembali kepada الطَّالِبُ.',hint:'Jangan anggap يَقْرَأُ dan الدَّرْسَ sebagai dua khabar. Keduanya membentuk satu jumlah fi‘liyyah yang menjelaskan apa yang dilakukan siswa.'}
+ ],
+ '5-1':[
+  {indices:[1,2],label:'Jumlah ismiyyah sebagai khabar',functionLabel:'Khabar berupa jumlah ismiyyah',explanation:'بَابُهُ مَفْتُوحٌ adalah jumlah ismiyyah yang menjadi khabar bagi الْبَيْتُ. بَابُهُ merupakan mubtada’ kedua dan مَفْتُوحٌ adalah khabarnya; dhamir هُ menghubungkan jumlah tersebut dengan الْبَيْتُ.',hint:'Perhatikan bahwa setelah mubtada’ pertama, muncul susunan mubtada’ dan khabar kedua. Seluruh susunan بَابُهُ مَفْتُوحٌ menjadi khabar bagi الْبَيْتُ.'}
+ ],
+ '4-2':[
+  {indices:[0],label:'Pokok pembicaraan',functionLabel:'Mubtada’ marfū‘',explanation:'الطَّالِبُ menjadi pokok pembicaraan. Frasa عِنْدَ الْبَابِ memberi keterangan tempat tentang siswa tersebut.',hint:'Tentukan isim yang sedang dibicarakan sebelum menganalisis keterangan tempat.'},
+  {indices:[1,2],label:'Frasa khabar',functionLabel:'Khabar berupa syibh jumlah ẓarfiyyah (ظرفية)',explanation:'عِنْدَ الْبَابِ adalah satu kesatuan khabar yang menerangkan lokasi siswa. Di dalamnya, عِنْدَ adalah ẓarf makān manṣūb sekaligus muḍāf, sedangkan الْبَابِ adalah muḍāf ilaih majrūr.',hint:'Analisis dahulu seluruh frasa sebagai khabar. Setelah itu, periksa hubungan internal: kata pertama menunjukkan tempat dan menjadi muḍāf; kata kedua melengkapinya sebagai muḍāf ilaih.'}
+ ],
+ '5-2':[
+  {indices:[1,2],label:'Frasa khabar',functionLabel:'Khabar berupa syibh jumlah jar-majrūr',explanation:'فِي الدُّرْجِ merupakan satu kesatuan syibh jumlah yang menjadi khabar. فِي adalah huruf jar dan الدُّرْجِ adalah isim majrūr.',hint:'Jangan memisahkan فِي الدُّرْجِ ketika menentukan fungsi kalimat. Keduanya bersama-sama menjadi khabar; baru setelah itu analisis huruf jar dan isim majrūr.'}
+ ],
+ '6-0':[
+  {indices:[0,1],label:'Frasa khabar muqaddam',functionLabel:'Khabar muqaddam berupa syibh jumlah jar-majrūr',explanation:'فِي الْفَصْلِ didahulukan sebagai khabar, sedangkan طَالِبٌ menjadi mubtada’ mu’akhkhar.',hint:'Lihat keseluruhan frasa tempat di awal kalimat. Frasa itu adalah khabar muqaddam; طَالِبٌ yang datang setelahnya adalah mubtada’ mu’akhkhar.'}
+ ],
+ '6-1':[
+  {indices:[0,1],label:'Frasa khabar muqaddam',functionLabel:'Khabar muqaddam berupa syibh jumlah jar-majrūr',explanation:'عَلَى الْمَكْتَبِ merupakan satu kesatuan khabar muqaddam; كِتَابٌ adalah mubtada’ mu’akhkhar.',hint:'Gabungkan huruf jar dan isim sesudahnya sebagai satu frasa. Frasa tersebut didahulukan sebagai khabar.'}
+ ],
+ '6-2':[
+  {indices:[0,1],label:'Frasa khabar muqaddam',functionLabel:'Khabar muqaddam berupa syibh jumlah ẓarfiyyah',explanation:'أَمَامَ الْمَدْرَسَةِ adalah keterangan tempat yang berfungsi sebagai khabar muqaddam; حَافِلَةٌ menjadi mubtada’ mu’akhkhar.',hint:'أَمَامَ الْمَدْرَسَةِ menunjukkan tempat. Analisis frasa ini sebagai satu khabar muqaddam sebelum mengurai ẓarf dan muḍāf ilaih.'}
+ ],
+ '7-2':[
+  {indices:[2,3],label:'Jumlah fi‘liyyah sebagai khabar kāna',functionLabel:'Khabar kāna berupa jumlah fi‘liyyah',explanation:'يَكْتُبُ الدَّرْسَ merupakan jumlah fi‘liyyah yang menjadi khabar kāna. Karena berupa jumlah fi‘liyyah, kedudukannya berada pada محل نصب خبر كان; fa‘il pada يَكْتُبُ berupa ḍamīr mustatir هو.',hint:'Setelah كَانَ dan isimnya, perhatikan satu rangkaian pekerjaan يَكْتُبُ الدَّرْسَ. Seluruh jumlah fi‘liyyah itu menjadi khabar kāna.'}
+ ],
+ '7-1':[
+  {indices:[1,2],label:'Frasa khabar kāna',functionLabel:'Khabar kāna muqaddam berupa syibh jumlah',explanation:'فِي الْفَصْلِ adalah khabar kāna yang didahulukan dan menempati محل نصب خبر كان; طَالِبٌ adalah isim kāna yang diakhirkan dan tetap marfū‘.',hint:'Setelah menemukan كَانَ, ingat bahwa isimnya marfū‘ dan khabarnya manṣūb. Frasa فِي الْفَصْلِ adalah khabar kāna, sedangkan طَالِبٌ adalah isim kāna.'}
+ ],
+ '8-2':[
+  {indices:[2,3],label:'Jumlah fi‘liyyah sebagai khabar inna',functionLabel:'Khabar inna berupa jumlah fi‘liyyah',explanation:'يَقْرَأُ الدَّرْسَ merupakan jumlah fi‘liyyah yang menjadi khabar إِنَّ dan menempati محل رفع خبر إنّ. Fa‘il pada يَقْرَأُ berupa ḍamīr mustatir هو yang kembali kepada الطَّالِبَ.',hint:'Setelah إِنَّ dan isimnya, gabungkan يَقْرَأُ الدَّرْسَ sebagai satu jumlah fi‘liyyah yang berfungsi sebagai khabar.'}
+ ],
+ '8-1':[
+  {indices:[1,2],label:'Frasa khabar inna',functionLabel:'Khabar inna muqaddam berupa syibh jumlah',explanation:'فِي الْمَكْتَبَةِ adalah khabar إِنَّ yang didahulukan dan menempati محل رفع خبر إنّ; كُتُبًا adalah isim إِنَّ yang diakhirkan dan manṣūb.',hint:'إِنَّ menashabkan isim dan merafa‘kan khabar. Frasa فِي الْمَكْتَبَةِ menjadi khabar yang didahulukan, sedangkan كُتُبًا adalah isim إِنَّ.'}
+ ],
+ '9-1':[
+  {indices:[1,2],label:'Jumlah fi‘liyyah sebagai khabar',functionLabel:'Khabar berupa jumlah fi‘liyyah',explanation:'يَكْتُبُ الدَّرْسَ adalah jumlah fi‘liyyah yang menjadi khabar bagi الطَّالِبُ; fa‘ilnya berupa ḍamīr mustatir هو.',hint:'Gabungkan fi‘il dan objeknya sebagai satu jumlah fi‘liyyah. Seluruh klausa menjelaskan kegiatan mubtada’.'}
+ ],
+ '10-2':[
+  {indices:[1,2],label:'Jumlah fi‘liyyah sebagai khabar',functionLabel:'Khabar berupa jumlah fi‘liyyah',explanation:'يَشْرَحُ الْقَاعِدَةَ adalah jumlah fi‘liyyah yang menjadi khabar bagi الْمُعَلِّمُ; fa‘ilnya berupa ḍamīr mustatir هو.',hint:'Perhatikan bahwa guru adalah pokok pembicaraan. Rangkaian يَشْرَحُ الْقَاعِدَةَ menjadi informasi tentang guru tersebut.'}
+ ],
+ '11-1':[
+  {indices:[1,2],label:'Jumlah fi‘liyyah sebagai khabar',functionLabel:'Khabar berupa jumlah fi‘liyyah',explanation:'يَقْرَأُ الْكِتَابَ merupakan jumlah fi‘liyyah yang menjadi khabar bagi الطَّالِبُ; fi‘ilnya memiliki fa‘il tersembunyi هو dan الْكِتَابَ adalah maf‘ūl bih.',hint:'Jangan memisahkan kata kerja dan objeknya saat menentukan khabar. Keduanya membentuk satu klausa yang menjelaskan mubtada’.'}
+ ],
+ '12-1':[
+  {indices:[1,2,3],label:'Jumlah fi‘liyyah sebagai khabar',functionLabel:'Khabar berupa jumlah fi‘liyyah yang dilengkapi ẓarf',explanation:'يَجْلِسُ أَمَامَ السَّبُّورَةِ merupakan jumlah fi‘liyyah yang menjadi khabar bagi الْمُعَلِّمُ. أَمَامَ السَّبُّورَةِ melengkapi klausa sebagai keterangan tempat.',hint:'Baca seluruh rangkaian dari يَجْلِسُ sampai السَّبُّورَةِ sebagai satu informasi tentang guru. Di dalam klausa itu ada fi‘il dan keterangan tempat.'}
+ ],
+ '19-1':[
+  {indices:[1,2,3],label:'Jumlah fi‘liyyah sebagai khabar',functionLabel:'Khabar berupa jumlah fi‘liyyah',explanation:'لَنْ يُهْمِلَ وَاجِبَهُ adalah jumlah fi‘liyyah yang menjadi khabar bagi الطَّالِبُ. لَنْ menashabkan fi‘il muḍāri‘; وَاجِبَهُ menjadi maf‘ūl bih.',hint:'Gabungkan huruf naṣb, fi‘il muḍāri‘, dan objeknya sebagai satu klausa yang menjelaskan mubtada’.'}
+ ],
+ '20-1':[
+  {indices:[1,2,3],label:'Jumlah fi‘liyyah sebagai khabar',functionLabel:'Khabar berupa jumlah fi‘liyyah',explanation:'لَمْ يَفْتَحْ الْكِتَابَ adalah jumlah fi‘liyyah yang menjadi khabar bagi الْمُعَلِّمُ. لَمْ menjazmkan fi‘il muḍāri‘ dan الْكِتَابَ adalah maf‘ūl bih.',hint:'Lihat rangkaian لَمْ يَفْتَحْ الْكِتَابَ sebagai satu klausa. Huruf jazm memengaruhi fi‘il, sementara seluruh klausa menjadi khabar.'}
+ ],
+ '17-2':[
+  {indices:[0,1,2],label:'Frasa khabar muqaddam',functionLabel:'Khabar muqaddam berupa syibh jumlah jar-majrūr dengan idhafah',explanation:'فِي بَيْتِ الْمُدِيرِ merupakan satu kesatuan syibh jumlah sebagai khabar muqaddam. Di dalamnya فِي adalah huruf jar, بَيْتِ isim majrūr sekaligus muḍāf, dan الْمُدِيرِ muḍāf ilaih.',hint:'Baca tiga kata ini sebagai satu frasa tempat. Frasa tersebut menjadi khabar muqaddam; kemudian uraikan struktur jar-majrūr dan idhafah di dalamnya.'}
+ ]
+};
 export const learningQuestions:LearningExercise[]=curatedSets.flatMap((group,ti)=>group.map(([translation,words],levelIndex)=>{
  const difficulty = (['Dasar','Menengah','Lanjutan'] as const)[levelIndex];
  return {
   id:`${CURRICULUM_VERSION}-${ti}-${levelIndex}`,source:'Umum',
   title:`${topics[ti]} — ${difficulty}`,sentence:words.map(w=>w.token).join(' '),
   translation,topic:topics[ti],words,difficulty,
-  context:`Fokus: ${topics[ti]}. Tingkat ${difficulty.toLowerCase()}. Analisis setiap kata berdasarkan fungsi dan kedudukan i‘rabnya.`
+  context:`Fokus: ${topics[ti]}. Tingkat ${difficulty.toLowerCase()}. Analisis hubungan kata dan frasa terlebih dahulu, lalu periksa rincian i‘rab setiap unsur.`,
+  analysisGroups:groupDefinitions[`${ti}-${levelIndex}`]||[]
  };
 }));
 export const positions=[...new Set(learningQuestions.flatMap(e=>e.words.map(w=>w.position)))].sort();

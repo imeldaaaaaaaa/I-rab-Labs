@@ -1,20 +1,23 @@
-# Validasi Irab Labs v0.7.0
+# Validasi I'rab Labs v0.8.3
 
-Disusun 30 Oktober 2026. Dasar repository: `imeldaaaaaaaa/I-rab-Labs`, branch `main`, commit `6a18190619cfe2ab59273bc650fa67eae8f7addf`.
+## Pemeriksaan yang berhasil dilakukan pada paket ini
 
-## Pemeriksaan yang dilakukan
+- Transpilasi/syntax check TypeScript untuk `data/curriculum.ts`, `app/page.tsx`, `app/components/StaffPanel.tsx`, `app/api/question-analytics/route.ts`, dan `app/api/progress/route.ts`: tidak ditemukan kesalahan sintaks.
+- Pemeriksaan kurikulum melalui TypeScript transpile dan eksekusi logika: 23 submateri, 69 soal, 219 unsur kata, seluruh ID dan kalimat unik pada bank, dan seluruh kunci jawaban menghasilkan hasil penilaian yang konsisten.
+- Pemeriksaan seluruh kelompok analisis: 19 soal memiliki kelompok frasa; seluruh indeks anggota kelompok berada dalam rentang kata pada soal.
+- Contoh `الطَّالِبُ عِنْدَ الْبَابِ`: `الطَّالِبُ` adalah mubtada'; `عِنْدَ الْبَابِ` adalah khabar berupa syibh jumlah ẓarfiyyah. Secara internal, `عِنْدَ` adalah ẓarf makān manṣūb sekaligus muḍāf, dan `الْبَابِ` adalah muḍāf ilaih majrūr.
+- Pemeriksaan ambang kelulusan: skor 80/100 membuka materi berikutnya; skor di bawah 80 tidak membuka materi berikutnya.
+- Endpoint statistik dibatasi untuk guru/admin, hanya mengagregasi akun berperan siswa, dan tidak mengirim identitas siswa dalam respons.
+- Guru/admin dapat membuka semua materi dan soal, serta mencoba soal tanpa pembatasan urutan. Percobaan staff dikecualikan dari statistik siswa.
+- Migrasi `20261105_v083_staff_analytics.sql` memperbarui RPC agar status jawaban terakhir menjadi sumber kebenaran setelah siswa mengulang.
 
-- `npm run typecheck`: lulus.
-- `npm run lint`: lulus.
-- `npm run test:curriculum`: 22 topik, 110 kalimat unik lintas topik, 343 kata dengan kunci yang dapat dinilai; kelima soal per topik tersedia; urutan materi dan ambang 80% diuji.
-- `npm run test:database`: migrasi dijalankan dua kali pada PostgreSQL lokal PGlite dengan skema Auth dan role uji. Lulus: pendaftaran guru terverifikasi, pengajuan berulang, admin tidak berubah menjadi guru, akun belum terverifikasi ditolak, simpan jawaban atomik, retry tidak menambah hitungan, hasil benar tidak turun saat latihan ulang salah, ringkasan progres, pembatasan kirim saran, RLS siswa/guru/pengunjung, serta larangan menjalankan RPC istimewa dari client.
-- `npm run build`: build produksi Next.js berhasil.
-- Browser Chromium, situs lokal: jawaban salah/benar, kelanjutan antarsoal, tombol kembali, tabel review, riwayat setelah reload, review tidak menambah percobaan, materi terkunci, formulir saran, akses masuk calon guru, tampilan lebar 390 px tanpa overflow halaman, dan penolakan API tanpa autentikasi.
-- Browser dengan layanan simulasi: unggah progres akun, form aktivasi guru otomatis, daftar seluruh siswa, laporan 22 materi, guru tidak mendapat inbox saran admin, serta perubahan status saran oleh admin. Simulasi tidak memakai data pengguna sungguhan.
+## Pemeriksaan yang belum dapat dilakukan
 
-## Batas pengujian
+- `npm ci`, `npm run typecheck`, `npm run lint`, dan `npm run build` penuh tidak berhasil dijalankan di lingkungan penyusunan karena instalasi dependency terhenti dan cache npm tidak memiliki seluruh paket yang diperlukan. Karena itu, paket ini belum boleh dianggap telah lolos build produksi.
+- Migrasi SQL belum dijalankan pada project Supabase milik pengguna.
+- Statistik riil belum dapat diverifikasi tanpa aktivitas siswa yang tersinkron di Supabase.
+- Deployment Vercel produksi belum dijalankan dari percakapan ini.
 
-- Akun Supabase, email verifikasi, dan deployment Vercel produksi pemilik tidak diakses. Uji end-to-end pada layanan produksi perlu dilakukan setelah migrasi serta pembaruan kode.
-- Pengujian kunci soal memeriksa kelengkapan, konsistensi penilaian, dan keunikan, bukan sertifikasi ilmiah seluruh analisis Nahwu. Tinjau bank dan pembahasan bersama pengajar sebelum menjadikannya ujian formal.
-- Tidak ada migrasi otomatis jawaban lama ke soal baru. Tidak ada penghapusan pengguna/tabel/riwayat lama.
-- Paket tidak memasukkan dependency terpasang, hasil build, hasil screenshot pengujian, atau kredensial.
+## Catatan penggunaan
+
+Sebelum deployment, jalankan migrasi Supabase v0.8.3, unggah isi project ke repository GitHub yang terhubung ke Vercel, lalu periksa hasil `next build` pada log deployment. Versi kurikulum berubah menjadi `v083`; progres v0.8.2 untuk kunci yang tidak berubah disalin, sedangkan tujuh unsur kata yang kuncinya diperbaiki harus dikerjakan ulang. Cache browser lokal v0.8.2 dimigrasikan otomatis.

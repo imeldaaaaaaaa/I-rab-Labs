@@ -1,21 +1,25 @@
-# Irab Labs — v0.7.0
+# I'rab Labs — v0.8.3
 
-Aplikasi latihan i‘rab berbasis Next.js 15, React 19, dan Supabase. Baca **MULAI_DI_SINI.md** untuk memperbarui website yang sudah berjalan.
+Aplikasi latihan i‘rab berbasis Next.js 15, React 19, dan Supabase. Panduan pemasangan dan migrasi ada di **MULAI_DI_SINI.md**.
 
-## Fitur
+## Fitur pembelajaran
+- 69 soal untuk 23 submateri; setiap submateri berisi 3 soal progresif (Dasar, Menengah, Lanjutan).
+- Variasi jumlah ismiyyah, jumlah fi‘liyyah, khabar mufrad/jumlah/syibh jumlah, khabar muqaddam, mubtada’ mu’akhkhar, dan struktur nahwu lain sesuai submateri.
+- Kelompok frasa untuk fungsi nahwu yang dianalisis sebagai satu kesatuan, dengan rincian i‘rab internal setiap kata.
+- Petunjuk kontekstual per kata/frasa dan koreksi jawaban yang menjelaskan bentuk i‘rab yang tepat.
+- Penilaian per unsur kata; nilai minimal 80/100 membuka materi berikutnya.
+- Riwayat pengunjung di browser, riwayat akun di Supabase, dan sinkronisasi jawaban online.
 
-- 110 kalimat berbeda untuk 22 submateri; 5 soal per materi.
-- Tahap dasar bertingkat; analisis setiap kata dengan kunci terstruktur.
-- Penguasaan 80% membuka materi berikutnya; soal dan materi yang sudah terbuka bisa direview kembali.
-- Review jawaban tersimpan dan pembahasan; latihan ulang tidak menghapus penguasaan terbaik.
-- Riwayat pengunjung di browser, riwayat akun di Supabase, antrean sinkronisasi dengan ID permintaan unik.
-- Admin dan guru membaca nama serta progres seluruh siswa tanpa fitur kelas.
-- Guru aktif otomatis setelah formulir valid dari akun dengan email terverifikasi.
-- Kotak saran publik dengan pembatasan kirim; inbox dan status saran khusus admin.
+## Fitur guru dan admin
+- Bank soal lengkap: semua 69 soal, terjemahan, tingkat kesulitan, kunci analisis, dan pembahasan.
+- Filter submateri dan pencarian soal.
+- Guru/admin dapat mencoba soal dari bank soal; pembatasan urutan siswa tidak berlaku bagi staff.
+- Statistik per soal: jumlah siswa yang mencoba, siswa yang berhasil menyelesaikan semua unsur, siswa yang belum berhasil, total pemeriksaan, dan tingkat keberhasilan per kata.
+- Statistik hanya mengagregasi akun role `student` dan tidak menampilkan identitas siswa. Percobaan guru/admin tidak masuk ke statistik siswa.
 
-## Pengembangan
+## Pengembangan lokal
 
-Node.js >=20.9. Salin `.env.example` ke `.env.local` dan isi nilai proyek untuk autentikasi/fitur online. Tanpa konfigurasi, pengunjung tetap bisa latihan dan review; tidak ada akun demo atau data siswa palsu.
+Gunakan Node.js 22.x.
 
 ```bash
 npm ci
@@ -27,27 +31,18 @@ npm run test:database
 npm run build
 ```
 
-Proyek baru: jalankan `supabase/schema.sql`, lalu `supabase/migrations/20261030_v070.sql`. Proyek lama: jalankan migrasi saja. Tidak ada secret dalam paket.
+Isi environment variables Supabase pada Vercel sesuai `MULAI_DI_SINI.md`. Jangan commit `.env.local` atau `SUPABASE_SERVICE_ROLE_KEY`.
 
 ## Arsitektur dan izin
+- `data/curriculum.ts` menjadi sumber bank soal, analisis kelompok, kunci, petunjuk, dan aturan nilai.
+- `data/exercises.ts` menyimpan tipe serta bank latihan lama.
+- `/api/progress` memverifikasi sesi, memeriksa akses materi siswa, menilai jawaban di server, dan menyimpan melalui RPC `service_role`.
+- `/api/question-analytics` hanya dapat diakses guru/admin dan mengirim statistik agregat untuk akun siswa.
+- `/api/students` dan `/api/feedback` tetap dilindungi autentikasi dan role.
+- `supabase/migrations/20261105_v083_staff_analytics.sql` memperbarui status jawaban terakhir saat siswa mengulang.
 
-`data/curriculum.ts` adalah sumber bank soal baru, penilaian, dan urutan materi. `data/exercises.ts` dipertahankan sebagai arsip bank lama dan definisi tipe. Pertanyaan baru tidak lagi mengambil kalimat cadangan dari topik lain. Huruf yang menempel dapat ditampilkan terpisah agar dapat dianalisis. Bank dan kunci perlu ditinjau pengajar sebelum dipakai untuk asesmen formal.
-
-`/api/progress` memverifikasi sesi, memeriksa materi sebelumnya, menilai jawaban di server, lalu menyimpan melalui RPC yang hanya dapat dijalankan `service_role`. ID permintaan unik mencegah penghitungan ulang ketika retry. RLS mengizinkan siswa membaca miliknya dan guru/admin membaca progres seluruh siswa. Tidak ada izin tulis langsung dari client ke tabel progres. Penyimpanan browser dipisahkan per UUID akun dan versi kurikulum. Saran publik dikirim melalui route server; IP tidak disimpan mentah.
-
-`/api/students` hanya untuk guru/admin, dengan paginasi 20 siswa dan detail per siswa. `/api/feedback` menerima saran dari pengunjung atau pengguna login; hanya admin yang membaca/mengubah statusnya. Rate limit database membatasi satu saran per menit dan lima per jam; header sumber IP mengandalkan perilaku proxy Vercel. Hosting lain perlu mengatur header proxy terpercaya.
-
-`/api/teacher-applications` menggunakan identitas akun dari Supabase, bukan alamat email yang diketik di formulir. RPC mendaftarkan formulir dan mengaktifkan role guru dalam satu transaksi. Admin tidak bisa diturunkan menjadi guru melalui endpoint ini. Akun guru yang mendaftar secara terbuka tidak berarti kredensial profesinya telah diverifikasi. Guru dapat melihat seluruh siswa sesuai rancangan produk.
-
-Endpoint undangan lama dipertahankan untuk kompatibilitas tautan yang sudah beredar. Endpoint admin tetap memeriksa admin di server. Pendaftaran guru otomatis tidak bergantung pada undangan atau Resend.
-
-Admin pertama tetap dibuat secara manual oleh pemilik proyek di Supabase; tidak ada pendaftaran admin publik. Daftarkan akun, verifikasi email, lalu ubah `profiles.role` untuk UUID akun pemilik melalui SQL Editor. Jangan membuka fungsi role admin ke client.
-
-## Batasan
-
-- Pengunjung tidak disinkronkan lintas perangkat dan riwayatnya tidak otomatis dipindah saat login.
-- Nilai adalah penguasaan kumulatif setelah latihan ulang, bukan nilai ujian percobaan pertama. Kunci latihan juga tersedia pada frontend untuk review.
-- Jawaban versi sebelum v0.7 tidak dapat dianggap benar untuk kalimat pengganti. Data lama tidak dihapus.
-- Antrean browser hanya tersedia selama data browser tidak dibersihkan. Pantau status sinkronisasi sebelum menutup akun/perangkat.
-- Riwayat semua pemeriksaan individual tidak ditampilkan; yang disimpan adalah jumlah pemeriksaan dan jawaban terbaik/terakhir per kata. Event ID disimpan agar retry idempotent.
-- Kredensial dan layanan produksi pemilik tidak diakses dalam penyusunan paket ini.
+## Catatan data
+- Versi kurikulum aktif adalah `v083`. Progres v0.8.2 yang kuncinya tidak berubah disalin ke v0.8.3; tujuh unsur kata yang kuncinya diperbaiki perlu dijawab ulang.
+- Statistik soal dihitung dari status terakhir yang tersimpan untuk setiap unsur kata per siswa. Persentase berhasil pada satu soal berarti persentase siswa yang pernah mencoba dan status terakhir seluruh unsur jawabannya benar.
+- Data statistik baru muncul setelah siswa mengerjakan soal pada versi `v083` dan jawaban tersinkron ke Supabase.
+- Bank soal dan kunci perlu ditinjau pengajar Nahwu sebelum digunakan sebagai asesmen formal.

@@ -11,6 +11,8 @@ import fs from 'node:fs';import assert from 'node:assert/strict';import {fileURL
  await db.exec(fs.readFileSync(root+'supabase/schema.sql','utf8').replace('create extension if not exists pgcrypto;',''));
  const migration=fs.readFileSync(root+'supabase/migrations/20261030_v070.sql','utf8');
  await db.exec(migration);await db.exec(migration);
+ const staffMigration=fs.readFileSync(root+'supabase/migrations/20261105_v083_staff_analytics.sql','utf8');
+ await db.exec(staffMigration);await db.exec(staffMigration);
  const ids=['11111111-1111-4111-8111-111111111111','22222222-2222-4222-8222-222222222222','33333333-3333-4333-8333-333333333333','44444444-4444-4444-8444-444444444444'];
  for(let i=0;i<4;i++)await db.query('insert into auth.users(id,email,email_confirmed_at) values($1,$2,$3)',[ids[i],`test${i}@example.test`,i===3?null:new Date().toISOString()]);
  await db.query("update profiles set role='admin' where id=$1",[ids[2]]);
@@ -25,9 +27,9 @@ import fs from 'node:fs';import assert from 'node:assert/strict';import {fileURL
  const event='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
  let r=await answer(ids[0],event,true);assert.equal(r.attempts,1);assert.equal(r.completed,true);
  r=await answer(ids[0],event,true);assert.equal(r.attempts,1);
- r=await answer(ids[0],'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',false);assert.equal(r.attempts,2);assert.equal(r.completed,true);assert.equal(r.answer.kind,'Fi‘il');
+ r=await answer(ids[0],'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',false);assert.equal(r.attempts,2);assert.equal(r.completed,false);assert.equal(r.answer.kind,'Isim');
  await answer(ids[1],event,true);
- const summary=await db.query("select * from irab_student_summaries($1,'v070')",[[ids[0]]]);assert.equal(Number(summary.rows[0].attempts),2);assert.equal(Number(summary.rows[0].correct_words),1);
+ const summary=await db.query("select * from irab_student_summaries($1,'v070')",[[ids[0]]]);assert.equal(Number(summary.rows[0].attempts),2);assert.equal(Number(summary.rows[0].correct_words),0);
  await db.query("select irab_submit_feedback(null,'guest','hash','Saran fitur','Tolong tambah latihan kosakata.')");
  await assert.rejects(db.query("select irab_submit_feedback(null,'guest','hash','Saran fitur','Tolong tambah latihan kosakata.')"),/RATE_LIMIT/);
  await db.exec(`reset role;set role authenticated;select set_config('request.jwt.claim.sub','${ids[0]}',false);select set_config('request.jwt.claim.role','authenticated',false);`);
@@ -39,5 +41,5 @@ import fs from 'node:fs';import assert from 'node:assert/strict';import {fileURL
  assert.equal((await db.query('select * from irab_word_progress')).rows.length,2);
  await db.exec('reset role;set role anon;');
  await assert.rejects(db.query('select * from irab_word_progress'),/permission denied/);
- await db.close();console.log('PASS: additive migration re-run, automatic verified teacher enrollment, admin preservation, atomic writes, idempotency, mastery retention, summaries, feedback throttling, student/staff/guest RLS, and RPC permissions.');
+ await db.close();console.log('PASS: additive migration re-run, automatic verified teacher enrollment, admin preservation, atomic writes, idempotency, latest-answer status, summaries, feedback throttling, student/staff/guest RLS, and RPC permissions.');
 })().catch(e=>{console.error(e);process.exit(1)});

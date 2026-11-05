@@ -6,7 +6,31 @@ export type WordRecord={question_id:string;word_index:number;answer:Answer;corre
 type Pending={eventId:string;questionId:string;wordIndex:number;answer:Answer};
 type Cache={records:Record<string,WordRecord>;pending:Pending[]};
 const empty=():Cache=>({records:{},pending:[]});
-function read(key:string):Cache{try{const v=JSON.parse(localStorage.getItem(key)||'null');return v&&v.records&&Array.isArray(v.pending)?v:empty();}catch{return empty();}}
+const correctedV082Words=new Set(['v082-1-0:0','v082-4-2:1','v082-6-0:0','v082-6-1:0','v082-6-2:0','v082-7-1:1','v082-8-1:1']);
+function read(key:string):Cache{
+ try{
+  const current=JSON.parse(localStorage.getItem(key)||'null');
+  if(current&&current.records&&Array.isArray(current.pending))return current;
+  if(!key.startsWith('irab_v083_'))return empty();
+  const oldKey=key.replace('irab_v083_','irab_v082_');
+  const old=JSON.parse(localStorage.getItem(oldKey)||'null');
+  if(!old||!old.records||!Array.isArray(old.pending))return empty();
+  const records:Cache['records']={};
+  for(const [oldCacheKey,record] of Object.entries(old.records) as [string,WordRecord][]){
+   const split=oldCacheKey.lastIndexOf(':');const oldQuestionId=oldCacheKey.slice(0,split);const wordIndex=Number(oldCacheKey.slice(split+1));
+   if(correctedV082Words.has(`${oldQuestionId}:${wordIndex}`))continue;
+   const questionId=oldQuestionId.replace(/^v082-/,'v083-');
+   records[`${questionId}:${wordIndex}`]={...record,question_id:questionId};
+  }
+  const pending:Pending[]=old.pending.flatMap((item:Pending)=>{
+   if(correctedV082Words.has(`${item.questionId}:${item.wordIndex}`))return [];
+   return [{...item,questionId:item.questionId.replace(/^v082-/,'v083-'),eventId:crypto.randomUUID()}];
+  });
+  const migrated={records,pending};
+  localStorage.setItem(key,JSON.stringify(migrated));
+  return migrated;
+ }catch{return empty();}
+}
 export function useLearningProgress(userId:string|null,onlineAccount:boolean){
  const storageKey=`irab_${CURRICULUM_VERSION}_${userId||'guest'}`;
  const [cache,setCache]=useState<Cache>(empty),[loading,setLoading]=useState(true),[syncStatus,setSyncStatus]=useState(''),[answers,setAnswers]=useState<Record<string,Answer>>({});
