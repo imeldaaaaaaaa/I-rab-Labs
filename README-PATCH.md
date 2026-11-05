@@ -52,3 +52,12 @@ ZIP ini adalah *patch installer*, bukan file source yang langsung dipasang oleh 
 **Jangan jalankan di folder lain.** Installer memeriksa nama proyek `bedah-irab` dan menghentikan proses jika file atau pola source tidak cocok. Jika installer berhenti dengan pesan error, jangan unggah hasil parsial; kirim pesan errornya untuk diperiksa.
 
 Build produksi serta integrasi dengan akun Supabase dan Vercel milikmu harus diuji setelah patch dipasang. Jangan membagikan `SUPABASE_SERVICE_ROLE_KEY` atau kredensial lain.
+
+
+## Revisi pembelajaran v0.8.0
+- Setiap submateri memiliki 3 latihan terintegrasi dengan tingkat Dasar, Menengah, dan Lanjutan.
+- Struktur soal dipilih untuk menghadirkan pola nahwu yang berbeda, termasuk jumlah ismiyah, jumlah fi'liyah, serta khabar muqaddam dan mubtada' mu'akhkhar.
+- Jawaban dikoreksi dan direkam per kata. Jawaban salah tetap dapat dilanjutkan agar skor akhir mencerminkan ketepatan seluruh kata.
+- Nilai materi dihitung dari jumlah kata yang benar dibandingkan seluruh kata dalam tiga soal.
+- Syarat membuka materi berikutnya adalah nilai minimal 80/100. Nilai di bawah 80 mengharuskan siswa mengulang tiga soal pada materi yang sama.
+- Versi kurikulum dinaikkan ke v080 agar riwayat dari bank soal lama tidak tercampur dengan struktur latihan baru.

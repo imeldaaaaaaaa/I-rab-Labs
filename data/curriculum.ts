@@ -1,9 +1,9 @@
 import type { Exercise, WordAnalysis, CaseState, Sign, WordKind } from './exercises';
 
-export const CURRICULUM_VERSION = 'v070';
+export const CURRICULUM_VERSION = 'v080';
 export const lessonGroups = [
  {title:'Dasar-dasar kalimah',desc:'Kenali jenis kata dan sifatnya.',topics:['Isim, fi‘il, huruf','Mu‘rab dan mabnī','Ma‘rifah dan nakirah','Mufrad, mutsanna, jamak']},
- {title:'Jumlah ismiyyah',desc:'Susunan kalimat yang diawali isim.',topics:['Mubtada’ dan khabar','Khabar mufrad, jumlah, syibh jumlah','Kāna wa akhawātuhā','Inna wa akhawātuhā']},
+ {title:'Jumlah ismiyyah',desc:'Susunan kalimat yang diawali isim.',topics:['Mubtada’ dan khabar','Khabar mufrad, jumlah, syibh jumlah','Khabar muqaddam dan mubtada’ mu’akhkhar','Kāna wa akhawātuhā','Inna wa akhawātuhā']},
  {title:'Jumlah fi‘liyyah',desc:'Fi‘il, pelaku, objek, dan pelengkap.',topics:['Fi‘il māḍī, muḍāri‘, amr','Fā‘il dan nā’ib al-fā‘il','Maf‘ūl bih','Maf‘ūl muṭlaq, li-ajlih, fīh']},
  {title:'Tawābi‘ dan struktur isim',desc:'Kata yang mengikuti kata lain.',topics:['Na‘t dan man‘ūt','‘Aṭaf dan ma‘ṭūf','Taukīd','Badal','Muḍāf dan muḍāf ilaih']},
  {title:'Huruf dan i‘rab lanjutan',desc:'Pengaruh amil pada kata sesudahnya.',topics:['Huruf jar dan isim majrūr','Fi‘il muḍāri‘ manṣūb','Fi‘il muḍāri‘ majzūm','Ḥāl dan tamyīz','Istitsnā’ dan munādā']}
@@ -11,8 +11,8 @@ export const lessonGroups = [
 export const topics = lessonGroups.flatMap(g=>g.topics);
 type Detail = { definiteness?: 'Ma‘rifah'|'Nakirah'|'Tidak berlaku'; number?: 'Mufrad'|'Tatsniyah'|'Jamak'|'Tidak berlaku' };
 export type LearningWord = WordAnalysis & Detail;
-export type LearningExercise = Omit<Exercise,'words'> & {words:LearningWord[]};
-const arPositions:Record<string,string> = {'Mubtada’':'مبتدأ','Khabar':'خبر','Fā‘il':'فاعل','Nā’ib al-fā‘il':'نائب فاعل','Maf‘ūl bih':'مفعول به','Na‘t':'نعت','Ma‘ṭūf':'معطوف','Taukīd':'توكيد معنوي','Badal':'بدل','Muḍāf ilaih':'مضاف إليه','Isim كان':'اسم كان','Khabar كان':'خبر كان','Isim إنّ':'اسم إنّ','Khabar إنّ':'خبر إنّ','Maf‘ūl muṭlaq':'مفعول مطلق','Maf‘ūl li-ajlih':'مفعول لأجله','Ẓarf zamān':'ظرف زمان','Ẓarf makān':'ظرف مكان','Ḥāl':'حال','Tamyīz':'تمييز','Mustatsnā':'مستثنى','Munādā':'منادى'};
+export type LearningExercise = Omit<Exercise,'words'> & {words:LearningWord[]; difficulty:'Dasar'|'Menengah'|'Lanjutan'};
+const arPositions:Record<string,string> = {'Mubtada’':'مبتدأ','Mubtada’ mu’akhkhar':'مبتدأ مؤخر','Khabar':'خبر','Khabar muqaddam (syibh jumlah)':'خبر مقدم','Fā‘il':'فاعل','Nā’ib al-fā‘il':'نائب فاعل','Maf‘ūl bih':'مفعول به','Na‘t':'نعت','Ma‘ṭūf':'معطوف','Taukīd':'توكيد معنوي','Badal':'بدل','Muḍāf ilaih':'مضاف إليه','Isim كان':'اسم كان','Khabar كان':'خبر كان','Isim إنّ':'اسم إنّ','Khabar إنّ':'خبر إنّ','Maf‘ūl muṭlaq':'مفعول مطلق','Maf‘ūl li-ajlih':'مفعول لأجله','Ẓarf zamān':'ظرف زمان','Ẓarf makān':'ظرف مكان','Ḥāl':'حال','Tamyīz':'تمييز','Mustatsnā':'مستثنى','Munādā':'منادى'};
 const arStates:Record<string,string> = {'Marfū‘':'مرفوع','Manṣūb':'منصوب','Majrūr':'مجرور','Majzūm':'مجزوم'};
 const arSigns:Record<string,string> = {'Ḍammah':'الضمة','Fatḥah':'الفتحة','Kasrah':'الكسرة','Sukūn':'السكون','Alif':'الألف','Wāw':'الواو','Yā’':'الياء'};
 function noun(token:string,position:string,state:CaseState='Marfū‘',sign:Sign='Ḍammah',extra:Detail={},note=''):LearningWord {
@@ -128,6 +128,15 @@ const rows:Row[][] = [
 ];
 
 // Pelengkap materi lanjutan ditambahkan di bawah agar setiap topik memiliki bank tersendiri.
+// Materi khusus susunan terbalik: khabar berupa syibh jumlah didahulukan,
+ // sedangkan mubtada’ nakirah datang kemudian sebagai mubtada’ mu’akhkhar.
+rows.splice(6,0,[
+ ['Di dalam kelas ada seorang siswa.',[h('فِي','Khabar muqaddam (syibh jumlah)','Syibh jumlah di depan berfungsi sebagai khabar muqaddam.'),n('الْفَصْلِ','Isim majrūr','Majrūr','Kasrah',{},'Bagian dari syibh jumlah yang menempati posisi khabar muqaddam.'),n('طَالِبٌ','Mubtada’ mu’akhkhar','Marfū‘','Ḍammah',{definiteness:'Nakirah'},'Mubtada’ diakhirkan setelah khabar berupa syibh jumlah.')]],
+ ['Di atas meja ada sebuah buku.',[h('عَلَى','Khabar muqaddam (syibh jumlah)','Syibh jumlah didahulukan sebagai khabar.'),n('الْمَكْتَبِ','Isim majrūr','Majrūr','Kasrah',{},'Isim majrūr yang melengkapi syibh jumlah.'),n('كِتَابٌ','Mubtada’ mu’akhkhar','Marfū‘','Ḍammah',{definiteness:'Nakirah'},'Mubtada’ mu’akhkhar dan marfū‘.')]],
+ ['Di dalam masjid ada seorang imam.',[h('فِي','Khabar muqaddam (syibh jumlah)','Khabar didahulukan.'),n('الْمَسْجِدِ','Isim majrūr','Majrūr','Kasrah',{},'Isim majrūr setelah huruf jar.'),n('إِمَامٌ','Mubtada’ mu’akhkhar','Marfū‘','Ḍammah',{definiteness:'Nakirah'},'Mubtada’ mu’akhkhar yang datang setelah khabar.')]],
+ ['Di kebun ada bunga.',[h('فِي','Khabar muqaddam (syibh jumlah)','Syibh jumlah mendahului mubtada’.'),n('الْحَدِيقَةِ','Isim majrūr','Majrūr','Kasrah'),n('زَهْرَةٌ','Mubtada’ mu’akhkhar','Marfū‘','Ḍammah',{definiteness:'Nakirah'})]],
+ ['Di rumah ada seorang tamu.',[h('فِي','Khabar muqaddam (syibh jumlah)','Khabar didahulukan.'),n('الْبَيْتِ','Isim majrūr','Majrūr','Kasrah'),n('ضَيْفٌ','Mubtada’ mu’akhkhar','Marfū‘','Ḍammah',{definiteness:'Nakirah'})]]
+]);
 const emphasis = (subject:string,token:string):LearningWord=>n(token,'Taukīd','Marfū‘','Ḍammah',{},`Menguatkan ${subject}; ḍamīr هُ adalah muḍāf ilaih.`);
 rows.push(
  [
@@ -189,10 +198,20 @@ rows.push(
 );
 // Contoh jar kelima memakai bā’ agar tetap tepat fokus materi.
 rows[17][4]=['Pelajar itu menulis dengan pena.',[v('كَتَبَ'),n('الطَّالِبُ','Fā‘il'),h('بِ','Huruf jar'),n('الْقَلَمِ','Isim majrūr','Majrūr','Kasrah')]];
-export const learningQuestions:LearningExercise[]=rows.flatMap((group,ti)=>group.map(([translation,words],qi)=>({
- id:`${CURRICULUM_VERSION}-${ti}-${qi}`,source:'Umum',title:`${topics[ti]} — Soal ${qi+1}`,sentence:words.map(w=>w.token).join(' '),translation,topic:topics[ti],words,
- context:`Fokus: ${topics[ti]}. Analisis setiap kata. Huruf yang menempel ditampilkan terpisah untuk latihan.`,reference:''
-})));
+// Tiga soal per materi: satu dasar, satu menengah, dan satu lanjutan.
+// Pemilihan indeks sengaja mengambil contoh dengan konstruksi berbeda, bukan sekadar variasi nama.
+const selectedLevels = [0,2,4] as const;
+export const learningQuestions:LearningExercise[]=rows.flatMap((group,ti)=>selectedLevels.map((sourceIndex,levelIndex)=>{
+ const [translation,words]=group[sourceIndex];
+ const difficulty = (['Dasar','Menengah','Lanjutan'] as const)[levelIndex];
+ return {
+  id:`${CURRICULUM_VERSION}-${ti}-${levelIndex}`,source:'Umum',
+  title:`${topics[ti]} — ${difficulty}`,sentence:words.map(w=>w.token).join(' '),
+  translation,topic:topics[ti],words,difficulty,
+  context:`Fokus: ${topics[ti]}. Tingkat ${difficulty.toLowerCase()}. Analisis setiap kata berdasarkan fungsi dan kedudukan i‘rabnya. Huruf yang menempel ditampilkan terpisah untuk latihan.`,
+  reference:''
+ };
+}));
 export const positions=[...new Set(learningQuestions.flatMap(e=>e.words.map(w=>w.position)))].sort();
 export type Answer={kind:WordKind|'';position:string;state:CaseState|'';sign:Sign|'';wordClass?:'Mu‘rab'|'Mabnī'|'';definiteness?:'Ma‘rifah'|'Nakirah'|'Tidak berlaku'|'';number?:'Mufrad'|'Tatsniyah'|'Jamak'|'Tidak berlaku'|''};
 export const blank:Answer={kind:'',position:'',state:'',sign:'',wordClass:'',definiteness:'',number:''};
@@ -203,4 +222,14 @@ export function expectedDefiniteness(w:LearningWord):NonNullable<Answer['definit
 export function expectedNumber(w:LearningWord):NonNullable<Answer['number']>{return w.kind==='Isim'?(w.number??'Mufrad'):'Tidak berlaku';}
 export function expectedAnswer(e:LearningExercise,index:number):Answer{const w=e.words[index];const stage=getFoundationStage(e.topic);return {kind:w.kind,position:w.position,state:stage<=4?expectedState(w):w.state,sign:w.sign,wordClass:expectedWordClass(w),definiteness:expectedDefiniteness(w),number:expectedNumber(w)};}
 export function gradeAnswer(e:LearningExercise,index:number,answer:Answer){const expected=expectedAnswer(e,index);const stage=getFoundationStage(e.topic);const fields:(keyof Answer)[]=stage===5?['kind','position','state','sign']:['kind','state',...(stage>=2?['wordClass' as const]:[]),...(stage>=3?['definiteness' as const]:[]),...(stage>=4?['number' as const]:[])];return fields.every(f=>answer[f]===expected[f]);}
-export function topicUnlocked(topic:string,completed:string[]){const ti=topics.indexOf(topic);return ti>=0&&topics.slice(0,ti).every(t=>learningQuestions.filter(q=>q.topic===t).filter(q=>q.words.every((_,i)=>completed.includes(`${q.id}:${i}`))).length>=4);}
+export function topicScore(topic:string,completed:string[]){
+ const qs=learningQuestions.filter(q=>q.topic===topic);
+ const total=qs.reduce((sum,q)=>sum+q.words.length,0);
+ if(!total)return 0;
+ const correct=qs.reduce((sum,q)=>sum+q.words.filter((_,i)=>completed.includes(`${q.id}:${i}`)).length,0);
+ return Math.round(correct/total*100);
+}
+export function topicUnlocked(topic:string,completed:string[]){
+ const ti=topics.indexOf(topic);
+ return ti>=0&&topics.slice(0,ti).every(t=>topicScore(t,completed)>=80);
+}

@@ -51,7 +51,7 @@ export function useLearningProgress(userId:string|null,onlineAccount:boolean){
   if(loading)return;
   const q=learningQuestions.find(q=>q.id===questionId);if(!q)return;
   const key=`${questionId}:${wordIndex}`,old=cacheRef.current.records[key],correct=gradeAnswer(q,wordIndex,answer);
-  const item:WordRecord={question_id:questionId,word_index:wordIndex,answer:old?.completed&&!correct?old.answer:answer,correct:correct||!!old?.completed,completed:correct||!!old?.completed,attempts:(old?.attempts||0)+1,updated_at:new Date().toISOString()};
+  const item:WordRecord={question_id:questionId,word_index:wordIndex,answer,correct,completed:correct,attempts:(old?.attempts||0)+1,updated_at:new Date().toISOString()};
   const pending=onlineAccount?[...cacheRef.current.pending,{eventId:crypto.randomUUID(),questionId,wordIndex,answer}]:[];
   persist({records:{...cacheRef.current.records,[key]:item},pending});void flush();
  }
