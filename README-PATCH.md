@@ -61,3 +61,8 @@ Build produksi serta integrasi dengan akun Supabase dan Vercel milikmu harus diu
 - Nilai materi dihitung dari jumlah kata yang benar dibandingkan seluruh kata dalam tiga soal.
 - Syarat membuka materi berikutnya adalah nilai minimal 80/100. Nilai di bawah 80 mengharuskan siswa mengulang tiga soal pada materi yang sama.
 - Versi kurikulum dinaikkan ke v080 agar riwayat dari bank soal lama tidak tercampur dengan struktur latihan baru.
+
+
+## Perbaikan deployment Vercel v0.8.1
+- `tsconfig.json` mengecualikan `patch-files` karena folder tersebut berisi snapshot/patch sumber dan bukan kode runtime. Ini mencegah TypeScript memeriksa `patch-files/data/curriculum.ts` yang mengimpor `./exercises` yang memang tidak disertakan di folder patch.
+- Node.js dipatok ke `22.x` agar deployment tidak otomatis berpindah ke major Node.js mendatang.
