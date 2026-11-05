@@ -1,6 +1,6 @@
 import type { Exercise, WordAnalysis, CaseState, Sign, WordKind } from './exercises';
 
-export const CURRICULUM_VERSION = 'v080';
+export const CURRICULUM_VERSION = 'v082';
 export const lessonGroups = [
  {title:'Dasar-dasar kalimah',desc:'Kenali jenis kata dan sifatnya.',topics:['Isim, fi‘il, huruf','Mu‘rab dan mabnī','Ma‘rifah dan nakirah','Mufrad, mutsanna, jamak']},
  {title:'Jumlah ismiyyah',desc:'Susunan kalimat yang diawali isim.',topics:['Mubtada’ dan khabar','Khabar mufrad, jumlah, syibh jumlah','Khabar muqaddam dan mubtada’ mu’akhkhar','Kāna wa akhawātuhā','Inna wa akhawātuhā']},
@@ -197,19 +197,164 @@ rows.push(
  ]
 );
 // Contoh jar kelima memakai bā’ agar tetap tepat fokus materi.
-rows[17][4]=['Pelajar itu menulis dengan pena.',[v('كَتَبَ'),n('الطَّالِبُ','Fā‘il'),h('بِ','Huruf jar'),n('الْقَلَمِ','Isim majrūr','Majrūr','Kasrah')]];
-// Tiga soal per materi: satu dasar, satu menengah, dan satu lanjutan.
-// Pemilihan indeks sengaja mengambil contoh dengan konstruksi berbeda, bukan sekadar variasi nama.
-const selectedLevels = [0,2,4] as const;
-export const learningQuestions:LearningExercise[]=rows.flatMap((group,ti)=>selectedLevels.map((sourceIndex,levelIndex)=>{
- const [translation,words]=group[sourceIndex];
+rows[18][4]=['Pelajar itu menulis dengan pena.',[v('كَتَبَ'),n('الطَّالِبُ','Fā‘il'),h('بِ','Huruf jar'),n('الْقَلَمِ','Isim majrūr','Majrūr','Kasrah')]];
+// Bank soal terkurasi: setiap submateri berisi tiga konstruksi yang bervariasi.
+// Variasi mencakup jumlah ismiyyah, jumlah fi'liyyah, khabar berupa jumlah,
+// syibh jumlah, serta susunan taqdim/ta'khir sesuai fokus kaidah.
+function demonstrative(token:string):LearningWord {
+ return {
+  token,kind:'Isim',position:'Mubtada’',state:'Mabnī',sign:'Sukūn',
+  explanation:`${token} adalah isim isyarah mabni 'ala as-sukun yang menempati محل رفع sebagai mubtada’.`,
+  fullIrab:`${token}: اسْمُ إِشَارَةٍ مَبْنِيٌّ عَلَى السُّكُونِ فِي مَحَلِّ رَفْعٍ مُبْتَدَأٌ.`
+ };
+}
+const curatedSets:Row[][] = [
+ // 1. Isim, fi'il, huruf: nominal, verbal, dan nominal dengan khabar jar-majrur.
+ [
+  ['Ilmu itu bermanfaat.',[n('الْعِلْمُ','Mubtada’'),n('نَافِعٌ','Khabar')]],
+  ['Siswa itu menulis pelajaran.',[v('كَتَبَ'),n('الطَّالِبُ','Fā‘il'),n('الدَّرْسَ','Maf‘ūl bih','Manṣūb','Fatḥah')]],
+  ['Guru itu berada di dalam kelas.',[n('الْمُعَلِّمُ','Mubtada’'),h('فِي','Huruf jar','Bersama isim sesudahnya membentuk syibh jumlah sebagai khabar.'),n('الْفَصْلِ','Isim majrūr','Majrūr','Kasrah',{},'Syibh jumlah فِي الْفَصْلِ menjadi khabar.')]]
+ ],
+ // 2. Mu'rab dan mabni: isim isyarah, fi'il madhi, dan mudhari yang dijazmkan.
+ [
+  ['Ini seorang siswa yang rajin.',[demonstrative('هَذَا'),n('طَالِبٌ','Khabar'),n('مُجْتَهِدٌ','Na‘t')]],
+  ['Guru itu menulis kaidah.',[v('كَتَبَ'),n('الْمُعَلِّمُ','Fā‘il'),n('الْقَاعِدَةَ','Maf‘ūl bih','Manṣūb','Fatḥah')]],
+  ['Siswa itu tidak menulis pelajaran.',[h('لَمْ','Huruf jazm','Huruf mabni yang menjazmkan fi‘il muḍāri‘.'),v('يَكْتُبْ','present','Majzūm','Sukūn'),n('الطَّالِبُ','Fā‘il'),n('الدَّرْسَ','Maf‘ūl bih','Manṣūb','Fatḥah')]]
+ ],
+ // 3. Ma'rifah dan nakirah: mubtada, fa'il, dan maf'ul beserta na't.
+ [
+  ['Buku itu bermanfaat.',[n('الْكِتَابُ','Mubtada’','Marfū‘','Ḍammah',{definiteness:'Ma‘rifah'}),n('مُفِيدٌ','Khabar','Marfū‘','Ḍammah',{definiteness:'Nakirah'})]],
+  ['Seorang siswa telah datang.',[v('جَاءَ'),n('طَالِبٌ','Fā‘il','Marfū‘','Ḍammah',{definiteness:'Nakirah'})]],
+  ['Siswa itu membaca sebuah buku baru.',[v('قَرَأَ'),n('الطَّالِبُ','Fā‘il','Marfū‘','Ḍammah',{definiteness:'Ma‘rifah'}),n('كِتَابًا','Maf‘ūl bih','Manṣūb','Fatḥah',{definiteness:'Nakirah'}),n('جَدِيدًا','Na‘t','Manṣūb','Fatḥah',{definiteness:'Nakirah'})]]
+ ],
+ // 4. Mufrad, mutsanna, jamak: contoh nominal dan verbal.
+ [
+  ['Siswa itu rajin.',[n('الطَّالِبُ','Mubtada’','Marfū‘','Ḍammah',{number:'Mufrad'}),n('مُجْتَهِدٌ','Khabar','Marfū‘','Ḍammah',{number:'Mufrad'})]],
+  ['Dua siswa telah hadir.',[v('حَضَرَ'),n('طَالِبَانِ','Fā‘il','Marfū‘','Alif',{number:'Tatsniyah',definiteness:'Nakirah'})]],
+  ['Para guru itu hadir.',[n('الْمُعَلِّمُونَ','Mubtada’','Marfū‘','Wāw',{number:'Jamak'}),n('حَاضِرُونَ','Khabar','Marfū‘','Wāw',{number:'Jamak'})]]
+ ],
+ // 5. Mubtada dan khabar: khabar mufrad, jumlah fi'liyyah, dan syibh jumlah.
+ [
+  ['Rumah itu besar.',[n('الْبَيْتُ','Mubtada’'),n('كَبِيرٌ','Khabar')]],
+  ['Siswa itu membaca pelajaran.',[n('الطَّالِبُ','Mubtada’'),v('يَقْرَأُ','present','Marfū‘','Ḍammah','Jumlah fi‘liyyah يَقْرَأُ الدَّرْسَ menjadi khabar bagi mubtada’.'),n('الدَّرْسَ','Maf‘ūl bih','Manṣūb','Fatḥah')]],
+  ['Siswa itu berada di dekat pintu.',[n('الطَّالِبُ','Mubtada’'),n('عِنْدَ','Khabar','Manṣūb','Fatḥah',{},'Zarf makān menjadi khabar dan sekaligus mudhaf.'),n('الْبَابِ','Muḍāf ilaih','Majrūr','Kasrah')]]
+ ],
+ // 6. Khabar mufrad, jumlah, syibh jumlah: tiga bentuk khabar berbeda.
+ [
+  ['Kebun itu indah.',[n('الْحَدِيقَةُ','Mubtada’'),n('جَمِيلَةٌ','Khabar')]],
+  ['Rumah itu, pintunya terbuka.',[n('الْبَيْتُ','Mubtada’'),n('بَابُهُ','Mubtada’','Marfū‘','Ḍammah',{},'Mubtada’ kedua dalam jumlah ismiyyah yang menjadi khabar bagi الْبَيْتُ.'),n('مَفْتُوحٌ','Khabar','Marfū‘','Ḍammah',{},'Khabar dari بَابُهُ; jumlah ismiyyah بَابُهُ مَفْتُوحٌ menjadi khabar pertama.')]],
+  ['Kunci-kunci itu berada di dalam laci.',[n('الْمَفَاتِيحُ','Mubtada’'),h('فِي','Huruf jar','Syibh jumlah sebagai khabar.'),n('الدُّرْجِ','Isim majrūr','Majrūr','Kasrah')]]
+ ],
+ // 7. Khabar muqaddam dan mubtada mu'akhkhar: variasi syibh jumlah dan zarf.
+ [
+  ['Di dalam kelas ada seorang siswa.',[h('فِي','Khabar muqaddam (syibh jumlah)'),n('الْفَصْلِ','Isim majrūr','Majrūr','Kasrah'),n('طَالِبٌ','Mubtada’ mu’akhkhar','Marfū‘','Ḍammah',{definiteness:'Nakirah'})]],
+  ['Di atas meja ada sebuah buku.',[h('عَلَى','Khabar muqaddam (syibh jumlah)'),n('الْمَكْتَبِ','Isim majrūr','Majrūr','Kasrah'),n('كِتَابٌ','Mubtada’ mu’akhkhar','Marfū‘','Ḍammah',{definiteness:'Nakirah'})]],
+  ['Di depan sekolah ada sebuah bus.',[n('أَمَامَ','Khabar muqaddam','Manṣūb','Fatḥah',{},'Zarf makān yang didahulukan sebagai khabar dan sekaligus mudhaf.'),n('الْمَدْرَسَةِ','Muḍāf ilaih','Majrūr','Kasrah'),n('حَافِلَةٌ','Mubtada’ mu’akhkhar','Marfū‘','Ḍammah',{definiteness:'Nakirah'})]]
+ ],
+ // 8. Kana wa akhawatuha: khabar mufrad, muqaddam, dan jumlah fi'liyyah.
+ [
+  ['Cuaca tadi dingin.',[v('كَانَ','past','Mabnī','Fatḥah','Fi‘il nāqiṣ; merafa‘kan isim dan menaṣabkan khabar.'),n('الْجَوُّ','Isim كان'),n('بَارِدًا','Khabar كان','Manṣūb','Fatḥah')]],
+  ['Di dalam kelas terdapat seorang siswa.',[v('كَانَ','past','Mabnī','Fatḥah','Fi‘il nāqiṣ.'),h('فِي','Khabar كان','Syibh jumlah فِي الْفَصْلِ menjadi khabar kāna yang didahulukan.'),n('الْفَصْلِ','Isim majrūr','Majrūr','Kasrah'),n('طَالِبٌ','Isim كان','Marfū‘','Ḍammah',{},'Isim kāna yang diakhirkan.')]],
+  ['Siswa itu sedang menulis pelajaran.',[v('كَانَ','past','Mabnī','Fatḥah','Fi‘il nāqiṣ.'),n('الطَّالِبُ','Isim كان'),v('يَكْتُبُ','present','Marfū‘','Ḍammah','Fi‘il muḍāri‘; jumlah fi‘liyyah يَكْتُبُ الدَّرْسَ menjadi khabar kāna.'),n('الدَّرْسَ','Maf‘ūl bih','Manṣūb','Fatḥah')]]
+ ],
+ // 9. Inna wa akhawatuha: khabar mufrad, muqaddam, dan jumlah fi'liyyah.
+ [
+  ['Sesungguhnya ilmu itu bermanfaat.',[h('إِنَّ','Huruf nāsikh'),n('الْعِلْمَ','Isim إنّ','Manṣūb','Fatḥah'),n('نَافِعٌ','Khabar إنّ')]],
+  ['Sesungguhnya di dalam perpustakaan terdapat buku-buku.',[h('إِنَّ','Huruf nāsikh'),h('فِي','Khabar إنّ','Syibh jumlah sebagai khabar إنّ yang didahulukan.'),n('الْمَكْتَبَةِ','Isim majrūr','Majrūr','Kasrah'),n('كُتُبًا','Isim إنّ','Manṣūb','Fatḥah',{},'Isim إنّ yang diakhirkan.')]],
+  ['Sesungguhnya siswa itu membaca pelajaran.',[h('إِنَّ','Huruf nāsikh'),n('الطَّالِبَ','Isim إنّ','Manṣūb','Fatḥah'),v('يَقْرَأُ','present','Marfū‘','Ḍammah','Jumlah fi‘liyyah يَقْرَأُ الدَّرْسَ menjadi khabar إنّ.'),n('الدَّرْسَ','Maf‘ūl bih','Manṣūb','Fatḥah')]]
+ ],
+ // 10. Fi'il madhi, mudhari, amr: fi'liyyah, ismiyyah dengan khabar fi'liyyah, dan amr.
+ [
+  ['Musafir itu kembali dari kota.',[v('رَجَعَ'),n('الْمُسَافِرُ','Fā‘il'),h('مِنَ','Huruf jar'),n('الْمَدِينَةِ','Isim majrūr','Majrūr','Kasrah')]],
+  ['Siswa itu sedang menulis pelajaran.',[n('الطَّالِبُ','Mubtada’'),v('يَكْتُبُ','present','Marfū‘','Ḍammah','Fi‘il muḍāri‘ yang membentuk jumlah fi‘liyyah sebagai khabar.'),n('الدَّرْسَ','Maf‘ūl bih','Manṣūb','Fatḥah')]],
+  ['Tulislah sebuah kalimat!',[v('اُكْتُبْ','command','Mabnī','Sukūn','Fi‘il amr; fā‘il berupa ḍamīr tersembunyi أنت.'),n('جُمْلَةً','Maf‘ūl bih','Manṣūb','Fatḥah')]]
+ ],
+ // 11. Fa'il dan na'ib al-fa'il: aktif, pasif, dan jumlah ismiyyah dengan khabar fi'liyyah.
+ [
+  ['Guru itu telah datang.',[v('جَاءَ'),n('الْمُعَلِّمُ','Fā‘il')]],
+  ['Pintu itu telah dibuka.',[v('فُتِحَ','past','Mabnī','Fatḥah','Fi‘il māḍī majhūl; kata sesudahnya menjadi nā’ib al-fā‘il.'),n('الْبَابُ','Nā’ib al-fā‘il')]],
+  ['Guru itu sedang menjelaskan kaidah.',[n('الْمُعَلِّمُ','Mubtada’'),v('يَشْرَحُ','present','Marfū‘','Ḍammah','Fā‘il berupa ḍamīr tersembunyi هو; jumlah fi‘liyyah menjadi khabar.'),n('الْقَاعِدَةَ','Maf‘ūl bih','Manṣūb','Fatḥah')]]
+ ],
+ // 12. Maf'ul bih: objek pada jumlah fi'liyyah dan khabar jumlah fi'liyyah.
+ [
+  ['Siswa itu membaca buku.',[v('قَرَأَ'),n('الطَّالِبُ','Fā‘il'),n('الْكِتَابَ','Maf‘ūl bih','Manṣūb','Fatḥah')]],
+  ['Siswa itu sedang membaca buku.',[n('الطَّالِبُ','Mubtada’'),v('يَقْرَأُ','present','Marfū‘','Ḍammah','Jumlah fi‘liyyah menjadi khabar; fā‘il berupa ḍamīr tersembunyi هو.'),n('الْكِتَابَ','Maf‘ūl bih','Manṣūb','Fatḥah')]],
+  ['Penjaga itu membuka pintu.',[v('فَتَحَ'),n('الْحَارِسُ','Fā‘il'),n('الْبَابَ','Maf‘ūl bih','Manṣūb','Fatḥah')]]
+ ],
+ // 13. Maf'ul mutlaq, li-ajlih, dan fih: bentuk verbal dan nominal dengan klausa verbal.
+ [
+  ['Pelari itu berlari dengan sungguh-sungguh.',[v('رَكَضَ'),n('الْعَدَّاءُ','Fā‘il'),n('رَكْضًا','Maf‘ūl muṭlaq','Manṣūb','Fatḥah')]],
+  ['Guru itu duduk di depan papan.',[n('الْمُعَلِّمُ','Mubtada’'),v('يَجْلِسُ','present','Marfū‘','Ḍammah','Jumlah fi‘liyyah menjadi khabar.'),n('أَمَامَ','Ẓarf makān','Manṣūb','Fatḥah',{},'Zarf makān sebagai maf‘ūl fīh.'),n('السَّبُّورَةِ','Muḍāf ilaih','Majrūr','Kasrah')]],
+  ['Siswa itu berdiri untuk menghormati guru.',[v('وَقَفَ'),n('الطَّالِبُ','Fā‘il'),n('اِحْتِرَامًا','Maf‘ūl li-ajlih','Manṣūb','Fatḥah'),h('لِ','Huruf jar'),n('الْمُعَلِّمِ','Isim majrūr','Majrūr','Kasrah')]]
+ ],
+ // 14. Na't dan man'ut: sifat pada mubtada, objek, dan subjek.
+ [
+  ['Buku baru itu bermanfaat.',[n('الْكِتَابُ','Mubtada’'),n('الْجَدِيدُ','Na‘t'),n('مُفِيدٌ','Khabar')]],
+  ['Siswa itu membaca cerita pendek.',[v('قَرَأَ'),n('الطَّالِبُ','Fā‘il'),n('قِصَّةً','Maf‘ūl bih','Manṣūb','Fatḥah'),n('قَصِيرَةً','Na‘t','Manṣūb','Fatḥah')]],
+  ['Siswi yang rajin itu hadir.',[n('الطَّالِبَةُ','Mubtada’'),n('الْمُجْتَهِدَةُ','Na‘t'),n('حَاضِرَةٌ','Khabar')]]
+ ],
+ // 15. 'Ataf: susunan nominal dan verbal dengan ma'tuf.
+ [
+  ['Zaid dan Amr hadir.',[n('زَيْدٌ','Mubtada’'),h('وَ','Huruf ‘aṭaf'),n('عَمْرٌو','Ma‘ṭūf'),n('حَاضِرَانِ','Khabar','Marfū‘','Alif')]],
+  ['Zaid datang kemudian Khalid.',[v('جَاءَ'),n('زَيْدٌ','Fā‘il'),h('ثُمَّ','Huruf ‘aṭaf'),n('خَالِدٌ','Ma‘ṭūf')]],
+  ['Aku membeli buku dan pena.',[v('اِشْتَرَيْتُ','past','Mabnī','Sukūn','Tā’ adalah fā‘il.'),n('كِتَابًا','Maf‘ūl bih','Manṣūb','Fatḥah'),h('وَ','Huruf ‘aṭaf'),n('قَلَمًا','Ma‘ṭūf','Manṣūb','Fatḥah')]]
+ ],
+ // 16. Taukid: penguatan pada mubtada dan fa'il.
+ [
+  ['Semua siswa hadir.',[n('الطُّلَّابُ','Mubtada’','Marfū‘','Ḍammah',{number:'Jamak'}),n('كُلُّهُمْ','Taukīd','Marfū‘','Ḍammah',{},'Menguatkan keseluruhan mubtada’; ḍamīr هُمْ menjadi muḍāf ilaih.'),n('حَاضِرُونَ','Khabar','Marfū‘','Wāw')]],
+  ['Direktur itu sendiri hadir.',[v('حَضَرَ'),n('الْمُدِيرُ','Fā‘il'),n('نَفْسُهُ','Taukīd','Marfū‘','Ḍammah')]],
+  ['Guru itu sendiri rajin.',[n('الْمُعَلِّمُ','Mubtada’'),n('نَفْسُهُ','Taukīd','Marfū‘','Ḍammah'),n('مُجْتَهِدٌ','Khabar')]]
+ ],
+ // 17. Badal: badal pada mubtada, fa'il, dan maf'ul bih.
+ [
+  ['Saudaraku, Zaid, adalah seorang guru.',[n('أَخِي','Mubtada’','Marfū‘','Ḍammah',{},'Mubtada’ sekaligus mudhaf; ya mutakallim sebagai mudhaf ilaih.'),n('زَيْدٌ','Badal','Marfū‘','Ḍammah'),n('مُعَلِّمٌ','Khabar')]],
+  ['Guru itu, Zaid, telah datang.',[v('جَاءَ'),n('الْمُعَلِّمُ','Fā‘il'),n('زَيْدٌ','Badal')]],
+  ['Aku menemui dokter itu, Sa’id.',[v('قَابَلْتُ','past','Mabnī','Sukūn','Tā’ adalah fā‘il.'),n('الطَّبِيبَ','Maf‘ūl bih','Manṣūb','Fatḥah'),n('سَعِيدًا','Badal','Manṣūb','Fatḥah')]]
+ ],
+ // 18. Idhafah: idhafah sebagai mubtada, objek, dan bagian khabar muqaddam.
+ [
+  ['Buku siswa itu baru.',[n('كِتَابُ','Mubtada’','Marfū‘','Ḍammah',{},'Muḍāf sekaligus mubtada’.'),n('الطَّالِبِ','Muḍāf ilaih','Majrūr','Kasrah'),n('جَدِيدٌ','Khabar')]],
+  ['Siswa itu membuka pintu kelas.',[v('فَتَحَ'),n('الطَّالِبُ','Fā‘il'),n('بَابَ','Maf‘ūl bih','Manṣūb','Fatḥah',{},'Muḍāf sekaligus maf‘ūl bih.'),n('الْفَصْلِ','Muḍāf ilaih','Majrūr','Kasrah')]],
+  ['Di rumah direktur ada seorang tamu.',[h('فِي','Huruf jar'),n('بَيْتِ','Isim majrūr','Majrūr','Kasrah',{},'Muḍāf yang menjadi bagian syibh jumlah.'),n('الْمُدِيرِ','Muḍāf ilaih','Majrūr','Kasrah'),n('ضَيْفٌ','Mubtada’ mu’akhkhar','Marfū‘','Ḍammah',{definiteness:'Nakirah'})]]
+ ],
+ // 19. Huruf jar dan isim majrur: jumlah ismiyyah dan fi'liyyah.
+ [
+  ['Buku itu berada di dalam tas.',[n('الْكِتَابُ','Mubtada’'),h('فِي','Huruf jar','Membentuk syibh jumlah sebagai khabar.'),n('الْحَقِيبَةِ','Isim majrūr','Majrūr','Kasrah')]],
+  ['Siswa itu pergi ke sekolah.',[v('ذَهَبَ'),n('الطَّالِبُ','Fā‘il'),h('إِلَى','Huruf jar'),n('الْمَدْرَسَةِ','Isim majrūr','Majrūr','Kasrah')]],
+  ['Pena itu berada di atas meja.',[n('الْقَلَمُ','Mubtada’'),h('عَلَى','Huruf jar','Membentuk syibh jumlah sebagai khabar.'),n('الْمَكْتَبِ','Isim majrūr','Majrūr','Kasrah')]]
+ ],
+ // 20. Mudhari mansub: fi'liyyah dan jumlah ismiyyah dengan khabar fi'liyyah.
+ [
+  ['Siswa itu tidak akan pergi.',[h('لَنْ','Huruf naṣb'),v('يَذْهَبَ','present','Manṣūb','Fatḥah'),n('الطَّالِبُ','Fā‘il')]],
+  ['Siswa itu tidak akan mengabaikan tugasnya.',[n('الطَّالِبُ','Mubtada’'),h('لَنْ','Huruf naṣb','Masuk pada fi‘il muḍāri‘ dalam jumlah fi‘liyyah yang menjadi khabar.'),v('يُهْمِلَ','present','Manṣūb','Fatḥah'),n('وَاجِبَهُ','Maf‘ūl bih','Manṣūb','Fatḥah')]],
+  ['Guru itu tidak akan menulis pelajaran.',[h('لَنْ','Huruf naṣb'),v('يَكْتُبَ','present','Manṣūb','Fatḥah'),n('الْمُعَلِّمُ','Fā‘il'),n('الدَّرْسَ','Maf‘ūl bih','Manṣūb','Fatḥah')]]
+ ],
+ // 21. Mudhari majzum: fi'liyyah, nominal dengan khabar fi'liyyah, dan larangan.
+ [
+  ['Anak itu tidak mengerjakan tugas.',[h('لَمْ','Huruf jazm'),v('يُؤَدِّ','present','Majzūm','Sukūn','Fi‘il muḍāri‘ majzūm; tanda jazm berupa penghapusan huruf ‘illah.'),n('الْوَلَدُ','Fā‘il'),n('الْوَاجِبَ','Maf‘ūl bih','Manṣūb','Fatḥah')]],
+  ['Guru itu tidak membuka buku.',[n('الْمُعَلِّمُ','Mubtada’'),h('لَمْ','Huruf jazm','Menjazmkan fi‘il muḍāri‘ dalam jumlah fi‘liyyah yang menjadi khabar.'),v('يَفْتَحْ','present','Majzūm','Sukūn'),n('الْكِتَابَ','Maf‘ūl bih','Manṣūb','Fatḥah')]],
+  ['Jangan mengabaikan tugasmu!',[h('لَا','Huruf jazm','لَا النَّاهِيَةُ: huruf larangan yang menjazmkan fi‘il muḍāri‘.'),v('تُهْمِلْ','present','Majzūm','Sukūn'),n('وَاجِبَكَ','Maf‘ūl bih','Manṣūb','Fatḥah')]]
+ ],
+ // 22. Hal dan tamyiz: hal dalam verbal dan tamyiz dalam nominal.
+ [
+  ['Siswa itu datang sambil tersenyum.',[v('جَاءَ'),n('الطَّالِبُ','Fā‘il'),n('مُبْتَسِمًا','Ḥāl','Manṣūb','Fatḥah')]],
+  ['Siswa itu lebih banyak ilmunya.',[n('الطَّالِبُ','Mubtada’'),n('أَكْثَرُ','Khabar','Marfū‘','Ḍammah'),n('عِلْمًا','Tamyīz','Manṣūb','Fatḥah',{},'Tamyiz menjelaskan sisi perbandingan pada أَكْثَرُ.')]],
+  ['Anak itu keluar sambil menangis.',[v('خَرَجَ'),n('الطِّفْلُ','Fā‘il'),n('بَاكِيًا','Ḥāl','Manṣūb','Fatḥah')]]
+ ],
+ // 23. Istitsna dan munada: istitsna dalam nominal/verbal dan bentuk nida'.
+ [
+  ['Para siswa hadir kecuali Zaid.',[n('الطُّلَّابُ','Mubtada’'),n('حَاضِرُونَ','Khabar'),h('إِلَّا','Huruf istitsnā’'),n('زَيْدًا','Mustatsnā','Manṣūb','Fatḥah')]],
+  ['Para siswa telah hadir kecuali Zaid.',[v('حَضَرَ'),n('الطُّلَّابُ','Fā‘il'),h('إِلَّا','Huruf istitsnā’'),n('زَيْدًا','Mustatsnā','Manṣūb','Fatḥah')]],
+  ['Wahai penuntut ilmu!',[h('يَا','Huruf nidā’'),n('طَالِبَ','Munādā','Manṣūb','Fatḥah',{},'Munādā muḍāf yang wajib manṣūb.'),n('الْعِلْمِ','Muḍāf ilaih','Majrūr','Kasrah')]]
+ ]
+];
+export const learningQuestions:LearningExercise[]=curatedSets.flatMap((group,ti)=>group.map(([translation,words],levelIndex)=>{
  const difficulty = (['Dasar','Menengah','Lanjutan'] as const)[levelIndex];
  return {
   id:`${CURRICULUM_VERSION}-${ti}-${levelIndex}`,source:'Umum',
   title:`${topics[ti]} — ${difficulty}`,sentence:words.map(w=>w.token).join(' '),
   translation,topic:topics[ti],words,difficulty,
-  context:`Fokus: ${topics[ti]}. Tingkat ${difficulty.toLowerCase()}. Analisis setiap kata berdasarkan fungsi dan kedudukan i‘rabnya. Huruf yang menempel ditampilkan terpisah untuk latihan.`,
-  reference:''
+  context:`Fokus: ${topics[ti]}. Tingkat ${difficulty.toLowerCase()}. Analisis setiap kata berdasarkan fungsi dan kedudukan i‘rabnya.`
  };
 }));
 export const positions=[...new Set(learningQuestions.flatMap(e=>e.words.map(w=>w.position)))].sort();
@@ -227,7 +372,7 @@ export function topicScore(topic:string,completed:string[]){
  const total=qs.reduce((sum,q)=>sum+q.words.length,0);
  if(!total)return 0;
  const correct=qs.reduce((sum,q)=>sum+q.words.filter((_,i)=>completed.includes(`${q.id}:${i}`)).length,0);
- return Math.round(correct/total*100);
+ return Math.floor(correct/total*100);
 }
 export function topicUnlocked(topic:string,completed:string[]){
  const ti=topics.indexOf(topic);

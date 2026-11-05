@@ -7,10 +7,10 @@ const mod={exports:{}};vm.runInNewContext(code,{exports:mod.exports,module:mod})
 const c=mod.exports;
 assert.equal(c.topics.length,23);assert.equal(c.learningQuestions.length,69);
 assert.equal(new Set(c.learningQuestions.map(q=>q.id)).size,69);
-assert.equal(new Set(c.learningQuestions.map(q=>q.sentence.replace(/[ًٌٍَُِّْٰـ]/g,''))).size,69,'All sentences must be distinct, including across topics');
+assert.equal(new Set(c.learningQuestions.map(q=>q.sentence.replace(/[ًٌٍَُِّْٰـ]/g,''))).size,69,'All sentences must be unique');
 const complete=[];
 for(const [ti,t] of c.topics.entries()){
- const questions=c.learningQuestions.filter(q=>q.topic===t);assert.equal(questions.length,3);assert.deepEqual(questions.map(q=>q.difficulty),['Dasar','Menengah','Lanjutan']);
+ const questions=c.learningQuestions.filter(q=>q.topic===t);assert.equal(questions.length,3);assert.equal(questions.map(q=>q.difficulty).join(','),'Dasar,Menengah,Lanjutan');
  assert.equal(c.topicUnlocked(t,complete),true);
  if(ti+1<c.topics.length)assert.equal(c.topicUnlocked(c.topics[ti+1],complete),false);
  for(const [qi,q] of questions.entries()){
@@ -24,4 +24,15 @@ for(const [ti,t] of c.topics.entries()){
  }
 }
 assert.equal(c.topicUnlocked('unknown',complete),false);
-console.log(`PASS: 22 topics, 66 globally unique sentences, 3 progressive questions per topic, ${c.learningQuestions.reduce((n,q)=>n+q.words.length,0)} graded words, and word-based 80% unlocks.`);
+// Uji ambang kelulusan tepat 80% pada materi kedua yang memiliki 10 kata.
+const secondTopic=c.topics[1];
+const secondQuestions=c.learningQuestions.filter(q=>q.topic===secondTopic);
+const firstQuestions=c.learningQuestions.filter(q=>q.topic===c.topics[0]);
+const firstWords=firstQuestions.flatMap(q=>q.words.map((_,i)=>`${q.id}:${i}`));
+const eightWords=secondQuestions.flatMap(q=>q.words.map((_,i)=>`${q.id}:${i}`)).slice(0,8);
+const sevenWords=eightWords.slice(0,7);
+assert.equal(c.topicScore(secondTopic,eightWords),80);
+assert.equal(c.topicUnlocked(c.topics[2],[...firstWords,...eightWords]),true);
+assert.equal(c.topicScore(secondTopic,sevenWords),70);
+assert.equal(c.topicUnlocked(c.topics[2],[...firstWords,...sevenWords]),false);
+console.log(`PASS: 23 topics, 69 globally unique sentences, 3 integrated progressive questions per topic, ${c.learningQuestions.reduce((n,q)=>n+q.words.length,0)} graded words, and word-based 80% unlocks.`);

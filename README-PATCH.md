@@ -66,3 +66,14 @@ Build produksi serta integrasi dengan akun Supabase dan Vercel milikmu harus diu
 ## Perbaikan deployment Vercel v0.8.1
 - `tsconfig.json` mengecualikan `patch-files` karena folder tersebut berisi snapshot/patch sumber dan bukan kode runtime. Ini mencegah TypeScript memeriksa `patch-files/data/curriculum.ts` yang mengimpor `./exercises` yang memang tidak disertakan di folder patch.
 - Node.js dipatok ke `22.x` agar deployment tidak otomatis berpindah ke major Node.js mendatang.
+
+
+## Revisi bank soal terintegrasi v0.8.2
+- Bank soal disusun ulang secara terkurasi untuk seluruh 23 submateri (69 soal).
+- Setiap submateri memiliki 3 soal: Dasar, Menengah, dan Lanjutan.
+- Variasi kalimat mencakup jumlah ismiyyah, jumlah fi'liyyah, khabar berupa jumlah fi'liyyah, khabar syibh jumlah, susunan khabar muqaddam, serta variasi aktif/pasif sesuai kaidah yang menjadi fokus submateri.
+- Soal tidak lagi dipilih secara mekanis dari indeks 0, 2, dan 4 bank lama.
+- Semua 69 kalimat diperiksa agar unik setelah harakat diabaikan.
+- Memperbaiki indeks bank Huruf Jar yang sebelumnya mengarah ke submateri Iḍāfah.
+- Nilai materi menggunakan pembulatan ke bawah agar siswa hanya lulus jika ketepatan sebenarnya sekurang-kurangnya 80%.
+- Versi kurikulum dinaikkan ke v082 agar progres dari bank soal lama tidak tercampur.
