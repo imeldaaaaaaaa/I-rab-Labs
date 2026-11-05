@@ -24,7 +24,8 @@ export async function GET(request:Request){
    .order('student_id').order('question_id').order('word_index')
    .range(offset,offset+999);
   if(error)return Response.json({error:'Data progres soal gagal dimuat.'},{status:500});
-  const batch=(data||[]).filter((r:any)=>allStudentIds.has(r.student_id)) as ProgressRow[];
+  const fetchedRows=(data||[]) as ProgressRow[];
+  const batch=fetchedRows.filter(r=>allStudentIds.has(r.student_id));
   rows.push(...batch);
   if(!data||data.length<1000)break;
   offset+=1000;

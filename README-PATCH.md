@@ -22,3 +22,6 @@
 - Jalankan `supabase/migrations/20261105_v083_staff_analytics.sql` pada Supabase sebelum deploy. Migrasi memperbaiki pembaruan status jawaban terakhir ketika siswa mengulang.
 - Gunakan Node.js 22.x pada Vercel.
 - Ikuti `MULAI_DI_SINI.md` untuk pemasangan.
+
+## Hotfix deployment Vercel
+- Memperbaiki ESLint `@typescript-eslint/no-explicit-any` pada endpoint statistik soal dengan menggunakan tipe `ProgressRow` eksplisit.
