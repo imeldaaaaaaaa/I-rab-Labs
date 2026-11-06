@@ -42,23 +42,15 @@ create policy irab_progress_read on public.irab_word_progress for select to auth
 -- No client writes. Routes verify authenticated role, validate and grade answers.
 -- Staff access to student names is served through /api/students; email is not returned.
 
-create or replace function public.irab_register_teacher(p_user uuid,p_name text,p_institution text,p_experience text,p_motivation text)
+-- Teacher access is not granted by a self-service RPC. The application and
+-- administrator approval workflow is handled by trusted server routes.
+create or replace function public.irab_register_teacher(
+ p_user uuid,p_name text,p_institution text,p_experience text,p_motivation text
+)
 returns void language plpgsql security definer set search_path=public as $$
-declare verified_email text; existing_id uuid; v_app_role public.app_role;
 begin
- select email into verified_email from auth.users where id=p_user and email_confirmed_at is not null;
- if verified_email is null then raise exception 'Verified account required'; end if;
- select role into v_app_role from public.profiles where id=p_user for update;
- if v_app_role is null or v_app_role='admin' then raise exception 'Invalid account'; end if;
- if char_length(p_name) not between 2 and 120 or char_length(p_institution) not between 2 and 180 or char_length(p_experience)>1500 or char_length(p_motivation) not between 20 and 2000 then raise exception 'Invalid form'; end if;
- select id into existing_id from public.teacher_applications where lower(email)=lower(verified_email) and status in ('pending','processing','approved') limit 1 for update;
- if existing_id is null then
-  insert into public.teacher_applications(full_name,email,institution,experience,motivation,status,reviewed_at)
-  values(p_name,lower(verified_email),p_institution,p_experience,p_motivation,'approved',now());
- else
-  update public.teacher_applications set full_name=p_name,institution=p_institution,experience=p_experience,motivation=p_motivation,status='approved',reviewed_at=now() where id=existing_id;
- end if;
- update public.profiles set full_name=p_name,role='teacher',updated_at=now() where id=p_user;
+ raise exception using errcode='42501',
+   message='Direct teacher activation is disabled. Submit a teacher application and wait for administrator approval and an invitation.';
 end; $$;
 
 create or replace function public.irab_record_answer(p_student uuid,p_version text,p_question text,p_word integer,p_answer jsonb,p_correct boolean,p_event uuid)
@@ -99,11 +91,10 @@ begin
  end if;
  insert into public.irab_feedback(user_id,sender_role,sender_hash,category,message) values(p_user,p_role,p_hash,p_category,p_message);
 end; $$;
-revoke all on function public.irab_register_teacher(uuid,text,text,text,text) from public,anon,authenticated;
+revoke all on function public.irab_register_teacher(uuid,text,text,text,text) from public,anon,authenticated,service_role;
 revoke all on function public.irab_record_answer(uuid,text,text,integer,jsonb,boolean,uuid) from public,anon,authenticated;
 revoke all on function public.irab_student_summaries(uuid[],text) from public,anon,authenticated;
 revoke all on function public.irab_submit_feedback(uuid,text,text,text,text) from public,anon,authenticated;
-grant execute on function public.irab_register_teacher(uuid,text,text,text,text) to service_role;
 grant execute on function public.irab_record_answer(uuid,text,text,integer,jsonb,boolean,uuid) to service_role;
 grant execute on function public.irab_student_summaries(uuid[],text) to service_role;
 grant execute on function public.irab_submit_feedback(uuid,text,text,text,text) to service_role;

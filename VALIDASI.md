@@ -1,47 +1,28 @@
-# Validasi I'rab Labs v0.8.3
+# Validasi I'rab Labs v0.9.4
 
-## Pemeriksaan yang berhasil dilakukan pada paket ini
+## Pemeriksaan yang berhasil dilakukan pada paket sumber
 
-- Transpilasi/syntax check TypeScript untuk `data/curriculum.ts`, `app/page.tsx`, `app/components/StaffPanel.tsx`, `app/api/question-analytics/route.ts`, dan `app/api/progress/route.ts`: tidak ditemukan kesalahan sintaks.
-- Pemeriksaan kurikulum melalui TypeScript transpile dan eksekusi logika: 23 submateri, 69 soal, 219 unsur kata, seluruh ID dan kalimat unik pada bank, dan seluruh kunci jawaban menghasilkan hasil penilaian yang konsisten.
-- Pemeriksaan seluruh kelompok analisis: 19 soal memiliki kelompok frasa; seluruh indeks anggota kelompok berada dalam rentang kata pada soal.
-- Contoh `الطَّالِبُ عِنْدَ الْبَابِ`: `الطَّالِبُ` adalah mubtada'; `عِنْدَ الْبَابِ` adalah khabar berupa syibh jumlah ẓarfiyyah. Secara internal, `عِنْدَ` adalah ẓarf makān manṣūb sekaligus muḍāf, dan `الْبَابِ` adalah muḍāf ilaih majrūr.
-- Pemeriksaan ambang kelulusan: skor 80/100 membuka materi berikutnya; skor di bawah 80 tidak membuka materi berikutnya.
-- Endpoint statistik dibatasi untuk guru/admin, hanya mengagregasi akun berperan siswa, dan tidak mengirim identitas siswa dalam respons.
-- Guru/admin dapat membuka semua materi dan soal, serta mencoba soal tanpa pembatasan urutan. Percobaan staff dikecualikan dari statistik siswa.
-- Migrasi `20261105_v083_staff_analytics.sql` memperbarui RPC agar status jawaban terakhir menjadi sumber kebenaran setelah siswa mengulang.
+- Syntax check TypeScript/TSX: 22 file diperiksa menggunakan TypeScript transpiler; tidak ditemukan kesalahan sintaks.
+- Syntax check JavaScript/MJS: 5 file diperiksa dengan `node --check`; tidak ditemukan kesalahan sintaks.
+- Validasi JSON `package.json` dan `package-lock.json`: berhasil.
+- `npm run test:curriculum` (dijalankan melalui `node scripts/check-curriculum.mjs`): PASS — 23 submateri, 69 soal unik, 219 unsur kata, dan ambang kelulusan 80%.
+- Email publik pada source telah diseragamkan menjadi `irablabs@gmail.com`.
+- Menu Hubungi Kami menampilkan alamat email publik, tombol `mailto:`, dan formulir Kotak Saran.
+- Alur pengajuan guru di source memerlukan email terverifikasi, menyimpan status pending, tidak mengubah role saat pengajuan, dan menyediakan pemeriksaan admin.
+- Endpoint persetujuan membuat token undangan yang disimpan sebagai hash, mengirim tautan satu kali melalui Resend, dan baru mengubah role setelah undangan ditebus oleh pemilik email yang sesuai.
+- Migrasi tambahan v0.9.4 menonaktifkan RPC lama `irab_register_teacher` agar tidak ada jalur aktivasi guru langsung melalui service role.
 
-## Pemeriksaan yang belum dapat dilakukan
+## Pemeriksaan yang belum dapat dilakukan di lingkungan penyusunan
 
-- `npm ci`, `npm run typecheck`, `npm run lint`, dan `npm run build` penuh tidak berhasil dijalankan di lingkungan penyusunan karena instalasi dependency terhenti dan cache npm tidak memiliki seluruh paket yang diperlukan. Karena itu, paket ini belum boleh dianggap telah lolos build produksi.
-- Migrasi SQL belum dijalankan pada project Supabase milik pengguna.
-- Statistik riil belum dapat diverifikasi tanpa aktivitas siswa yang tersinkron di Supabase.
-- Deployment Vercel produksi belum dijalankan dari percakapan ini.
+- `npm ci` tidak selesai karena dependency tidak tersedia di cache dan akses ke npm registry tidak berhasil diselesaikan. Karena itu `npm run typecheck`, `npm run lint`, `npm run test:database`, dan `npm run build` penuh belum dapat dijalankan.
+- Migrasi SQL v0.9.4 belum dijalankan pada project Supabase milik pengguna.
+- Pengiriman email Resend dan aktivasi undangan belum diuji dengan kredensial/domain Resend pengguna.
+- Deployment Vercel produksi belum dilakukan dari percakapan ini.
 
-## Catatan penggunaan
+## Sebelum produksi
 
-Sebelum deployment, jalankan migrasi Supabase v0.8.3, unggah isi project ke repository GitHub yang terhubung ke Vercel, lalu periksa hasil `next build` pada log deployment. Versi kurikulum berubah menjadi `v083`; progres v0.8.2 untuk kunci yang tidak berubah disalin, sedangkan tujuh unsur kata yang kuncinya diperbaiki harus dikerjakan ulang. Cache browser lokal v0.8.2 dimigrasikan otomatis.
-
-
-## Perbaikan deployment Vercel — lint v0.8.3
-
-Log Vercel menunjukkan satu kegagalan ESLint pada `app/api/question-analytics/route.ts` baris 27: penggunaan explicit `any` memicu aturan `@typescript-eslint/no-explicit-any`. Kode tersebut telah diperbaiki dengan memberi tipe `ProgressRow[]` pada hasil query sebelum memfilter berdasarkan ID siswa. Pemeriksaan sintaks TypeScript/TSX setelah perbaikan: 20 file, 0 kesalahan sintaks.
-
-Build produksi penuh tetap perlu dikonfirmasi oleh deployment Vercel berikutnya.
-
-
-## Redesign visual v0.9.0
-- Tampilan Fantasy Adventure dan maskot burung hantu ditambahkan tanpa mengubah nama atau urutan materi.
-- XP/level dihitung dari status kata benar yang sudah tersimpan; tidak ada tabel gamifikasi baru.
-- `npm run test:curriculum`: PASS (23 topik, 69 soal, 219 unsur kata, aturan nilai 80%).
-- Syntax check TypeScript/TSX: 20 file, 0 kesalahan sintaks.
-- Build produksi penuh masih harus dikonfirmasi pada Vercel.
-
-
-## Redesign eksplorasi v0.9.1
-- Peta Dunia Nahwu dengan 5 wilayah dan jalur batu ditambahkan.
-- Setiap rumah mewakili bab; level di dalam rumah mewakili subbab.
-- Navigasi level memakai progres tersimpan dan melanjutkan dari kata pertama yang belum selesai.
-- `npm run test:curriculum`: PASS — 23 topik, 69 soal, 219 unsur kata, aturan nilai 80%.
-- Syntax check TypeScript/TSX: 20 file, 0 kesalahan sintaks.
-- Build produksi Next.js tetap perlu dikonfirmasi melalui deployment Vercel.
+1. Cadangkan repository dan database.
+2. Pada project yang sudah menjalankan v0.7.0 dan v0.8.3, jalankan hanya `supabase/migrations/20261106_v094_teacher_approval.sql`.
+3. Isi `APP_BASE_URL`, `RESEND_API_KEY`, dan `RESEND_FROM_EMAIL` pada Environment Variables Vercel. `RESEND_FROM_EMAIL` harus memakai domain yang sudah diverifikasi di Resend.
+4. Commit isi project ke GitHub dan tunggu deployment Vercel berstatus Ready.
+5. Uji pengajuan guru, persetujuan admin, email undangan, redeem undangan, serta menu Hubungi Kami.

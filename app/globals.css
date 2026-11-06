@@ -644,3 +644,39 @@ body{background:radial-gradient(ellipse at 92% 5%,rgba(226,211,163,.18),transpar
  .world-house-node .region-landmark-icon{grid-column:1;grid-row:1/4;width:61px;height:61px;margin:0;border-radius:20px;font-size:35px}
  .region-landmark-large{width:92px;height:92px;border-radius:29px;font-size:54px}
 }
+
+
+/* v0.9.4 — teacher approval workflow and public contact centre */
+.contact-page{display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);gap:18px;align-items:start}
+.contact-page>.content-panel{margin-bottom:0}
+.contact-intro h2{margin:7px 0 10px;color:#31583c;font-size:25px}
+.contact-intro>p{font-size:11px;line-height:1.8;color:#78867c}
+.contact-email-card{display:flex;align-items:center;gap:13px;margin:20px 0 16px;padding:15px;border:1px solid #dce8d8;border-radius:14px;background:#f7fbf4}
+.contact-email-icon{width:42px;height:42px;display:grid;place-items:center;flex:0 0 auto;border-radius:12px;background:#e6f1e3;color:#2d6942;font-size:22px}
+.contact-email-card>div{display:grid;gap:4px;min-width:0}
+.contact-email-card small{font-size:8px;letter-spacing:1px;color:#819080;font-weight:800}
+.contact-email-card strong{font-size:13px;color:#28563a;overflow-wrap:anywhere}
+.contact-email-card span:last-child{font-size:9px;line-height:1.6;color:#7d897e}
+.contact-email-button{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;padding:11px 16px;border-radius:9px;font-size:10px;font-weight:750}
+.teacher-status-card{margin:18px 0;padding:17px;border:1px solid #dce8d8;border-radius:13px;background:#f7fbf4;color:#38583e}
+.teacher-status-card strong{display:block;color:#2d5939;font-size:13px}
+.teacher-status-card p{margin:7px 0 0;color:#718174;font-size:10px;line-height:1.75}
+.teacher-status-card.pending{background:#fff9e9;border-color:#eadbb5}
+.teacher-status-card.pending strong{color:#82662c}
+.teacher-status-card.approved{background:#eef8ef;border-color:#cfe4d0}
+.teacher-status-card.approved strong{color:#2e7442}
+.teacher-status-card.rejected{background:#fff4f2;border-color:#edd4d0}
+.teacher-status-card.rejected strong{color:#9a4d45}
+.teacher-applications-admin{margin-top:32px;padding-top:24px;border-top:1px solid #e2e9e1}
+.teacher-applications-admin>p{font-size:10px;line-height:1.75;color:#77867a}
+.teacher-application-admin-list{display:grid;gap:12px;margin-top:15px}
+.teacher-application-admin-card .section-heading{align-items:flex-start}
+.teacher-application-admin-card .section-heading>div{display:grid;gap:4px;min-width:0}
+.teacher-application-admin-card .section-heading>div strong{font-size:12px;color:#31543a}
+.teacher-application-admin-card .section-heading>div small{font-size:9px;color:#718174;overflow-wrap:anywhere}
+.teacher-application-admin-card p{white-space:pre-wrap;overflow-wrap:anywhere}
+.teacher-application-admin-card .application-status{flex:0 0 auto}
+.teacher-application-admin-card .application-helper{margin-top:10px;padding:9px 11px;border-radius:9px;background:#f1f7ef;color:#54715a}
+.teacher-application-admin-card .application-actions{margin-top:12px}
+@media(max-width:900px){.contact-page{grid-template-columns:1fr}}
+@media(max-width:600px){.contact-email-card{align-items:flex-start}.contact-email-card strong{font-size:11px}.teacher-application-admin-card{padding:13px}.teacher-application-admin-card .section-heading{gap:8px}}

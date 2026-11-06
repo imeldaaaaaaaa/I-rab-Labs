@@ -6,17 +6,29 @@ import type { WordRecord } from '@/lib/use-learning-progress';
 
 type Student={id:string;full_name:string;correct_words?:number;attempts?:number;last_active?:string};
 type Feedback={id:string;category:string;message:string;sender_role:string;status:string;created_at:string};
+type TeacherApplication={id:string;full_name:string;email:string;institution:string;experience:string;motivation:string;status:'pending'|'processing'|'approved'|'rejected';created_at:string;reviewed_at:string|null};
 type WordStat={word_index:number;token:string;position:string;answered_students:number;correct_students:number;incorrect_students:number;success_rate:number|null;attempts:number};
 type QuestionStat={question_id:string;participants:number;successful_students:number;unsuccessful_students:number;success_rate:number|null;unsuccessful_rate:number|null;total_checks:number;words:WordStat[]};
 async function api(path:string,init:RequestInit={}){if(!supabase)throw Error('Supabase belum terhubung.');const {data:{session}}=await supabase.auth.getSession();if(!session)throw Error('Silakan masuk kembali.');const r=await fetch(path,{...init,headers:{'Content-Type':'application/json',Authorization:`Bearer ${session.access_token}`},cache:'no-store'});const d=await r.json();if(!r.ok)throw Error(d.error||'Permintaan gagal.');return d;}
 export default function StaffPanel({admin,onPractice}:{admin:boolean;onPractice:(questionId:string)=>void}){
  const [students,setStudents]=useState<Student[]>([]),[page,setPage]=useState(0),[count,setCount]=useState(0),[busy,setBusy]=useState(false),[error,setError]=useState('');
  const [detail,setDetail]=useState<{student:Student;records:WordRecord[]}|null>(null),[feedback,setFeedback]=useState<Feedback[]>([]),[feedbackPage,setFeedbackPage]=useState(0),[feedbackCount,setFeedbackCount]=useState(0),[feedbackBusy,setFeedbackBusy]=useState(false);
+ const [applications,setApplications]=useState<TeacherApplication[]>([]),[applicationsBusy,setApplicationsBusy]=useState(false),[applicationsError,setApplicationsError]=useState(''),[applicationsNotice,setApplicationsNotice]=useState(''),[applicationAction,setApplicationAction]=useState('');
  const [analytics,setAnalytics]=useState<QuestionStat[]>([]),[analyticsBusy,setAnalyticsBusy]=useState(false),[analyticsError,setAnalyticsError]=useState(''),[topicFilter,setTopicFilter]=useState('Semua submateri'),[search,setSearch]=useState('');
  const load=useCallback(async()=>{setBusy(true);setError('');try{const d=await api(`/api/students?page=${page}`);setStudents(d.students);setCount(d.count);}catch(e){setError((e as Error).message);setStudents([]);}finally{setBusy(false);}},[page]);
  const loadFeedback=useCallback(async()=>{if(!admin)return;setFeedbackBusy(true);try{const d=await api(`/api/feedback?page=${feedbackPage}`);setFeedback(d.items);setFeedbackCount(d.count);}catch(e){setError((e as Error).message);}finally{setFeedbackBusy(false);}},[admin,feedbackPage]);
  const loadAnalytics=useCallback(async()=>{setAnalyticsBusy(true);setAnalyticsError('');try{const d=await api('/api/question-analytics');setAnalytics(d.analytics||[]);}catch(e){setAnalyticsError((e as Error).message);setAnalytics([]);}finally{setAnalyticsBusy(false);}},[]);
- useEffect(()=>{void load();},[load]);useEffect(()=>{void loadFeedback();},[loadFeedback]);useEffect(()=>{void loadAnalytics();},[loadAnalytics]);
+ const loadApplications=useCallback(async()=>{if(!admin)return;setApplicationsBusy(true);setApplicationsError('');try{const d=await api('/api/admin/teacher-applications');setApplications(d.applications||[]);}catch(e){setApplicationsError((e as Error).message);setApplications([]);}finally{setApplicationsBusy(false);}},[admin]);
+ async function decideApplication(applicationId:string,decision:'approve'|'reject'){
+  setApplicationAction(applicationId);setApplicationsError('');setApplicationsNotice('');
+  try{
+   await api('/api/admin/teacher-applications',{method:'POST',body:JSON.stringify({applicationId,decision})});
+   setApplicationsNotice(decision==='approve'?'Pengajuan disetujui. Undangan aktivasi guru berhasil dikirim ke email pemohon.':'Pengajuan guru telah ditolak.');
+   await loadApplications();
+  }catch(e){setApplicationsError((e as Error).message);}
+  finally{setApplicationAction('');}
+ }
+ useEffect(()=>{void load();},[load]);useEffect(()=>{void loadFeedback();},[loadFeedback]);useEffect(()=>{void loadAnalytics();},[loadAnalytics]);useEffect(()=>{void loadApplications();},[loadApplications]);
  async function openStudent(id:string){setBusy(true);setDetail(null);setError('');try{setDetail(await api(`/api/students?student=${id}`));}catch(e){setError((e as Error).message);}finally{setBusy(false);}}
  async function changeStatus(id:string,status:string){setFeedbackBusy(true);try{await api('/api/feedback',{method:'PATCH',body:JSON.stringify({id,status})});await loadFeedback();}catch(e){setError((e as Error).message);}finally{setFeedbackBusy(false);}}
  const filteredQuestions=useMemo(()=>learningQuestions.filter(q=>(topicFilter==='Semua submateri'||q.topic===topicFilter)&&(`${q.sentence} ${q.translation} ${q.topic}`.toLowerCase().includes(search.toLowerCase()))),[topicFilter,search]);
@@ -43,6 +55,26 @@ export default function StaffPanel({admin,onPractice}:{admin:boolean;onPractice:
     </div>
    </details>;})}</div>
   </section>
+  {admin&&<section className="teacher-applications-admin">
+   <div className="section-heading"><div><span className="section-kicker">AKSES PENGAJAR</span><h2>Pengajuan menjadi guru</h2></div><button className="button-secondary small" disabled={applicationsBusy} onClick={()=>void loadApplications()}>{applicationsBusy?'Memuat…':'Muat ulang'}</button></div>
+   <p>Periksa identitas dan alasan calon guru. Persetujuan akan mengirim undangan satu kali ke email pemohon; role guru baru aktif setelah pemohon menerima undangan tersebut.</p>
+   {applicationsError&&<p className="notice" role="alert">{applicationsError}</p>}
+   {applicationsNotice&&<p className="notice" role="status">{applicationsNotice}</p>}
+   {applicationsBusy&&!applications.length&&<p role="status">Memuat pengajuan guru…</p>}
+   <div className="teacher-application-admin-list">
+    {applications.map(application=><article className="admin-card teacher-application-admin-card" key={application.id}>
+     <div className="section-heading"><div><strong>{application.full_name}</strong><small>{application.email}</small></div><span className={`application-status ${application.status}`}>{application.status==='pending'?'Menunggu':application.status==='processing'?'Diproses':application.status==='approved'?'Disetujui':'Ditolak'}</span></div>
+     <p><strong>Institusi:</strong> {application.institution}</p>
+     {application.experience&&<p><strong>Pengalaman:</strong> {application.experience}</p>}
+     <p className="feedback-message"><strong>Motivasi:</strong> {application.motivation}</p>
+     <small>Diajukan: {new Date(application.created_at).toLocaleString('id-ID')}</small>
+     {application.status==='pending'&&<div className="application-actions"><button className="button-primary small" disabled={!!applicationAction||applicationsBusy} onClick={()=>void decideApplication(application.id,'approve')}>{applicationAction===application.id?'Memproses…':'Setujui & kirim undangan'}</button><button className="button-secondary small" disabled={!!applicationAction||applicationsBusy} onClick={()=>{if(window.confirm(`Tolak pengajuan ${application.full_name}?`))void decideApplication(application.id,'reject');}}>Tolak</button></div>}
+     {application.status==='approved'&&<p className="application-helper">Undangan aktivasi telah dikirim ke email pemohon. Role guru aktif setelah tautan diterima.</p>}
+     {application.status==='processing'&&<p className="application-helper">Pengajuan sedang diproses. Muat ulang beberapa saat lagi.</p>}
+    </article>)}
+    {!applicationsBusy&&!applications.length&&<p>Belum ada pengajuan guru.</p>}
+   </div>
+  </section>}
   {admin&&<section className="feedback-admin"><div className="section-heading"><h2>Masukan untuk pengembang</h2><button className="button-secondary small" disabled={feedbackBusy} onClick={()=>void loadFeedback()}>Muat ulang</button></div>{feedbackBusy&&<p role="status">Memuat saran…</p>}<div className="feedback-list">{feedback.map(f=><article className="admin-card" key={f.id}><div className="section-heading"><strong>{f.category}</strong><small>{new Date(f.created_at).toLocaleString('id-ID')}</small></div><small>Pengirim: {f.sender_role==='guest'?'Pengunjung':f.sender_role==='student'?'Siswa':f.sender_role==='teacher'?'Guru':'Admin'}</small><p className="feedback-message">{f.message}</p><label>Status <select aria-label="Status saran" value={f.status} disabled={feedbackBusy} onChange={e=>void changeStatus(f.id,e.target.value)}><option value="baru">Baru</option><option value="ditinjau">Ditinjau</option><option value="selesai">Selesai</option></select></label></article>)}{!feedback.length&&!feedbackBusy&&<p>Belum ada saran.</p>}</div><div className="review-nav"><button className="button-secondary small" disabled={!feedbackPage||feedbackBusy} onClick={()=>setFeedbackPage(p=>p-1)}>Sebelumnya</button><span>Halaman {feedbackPage+1}</span><button className="button-secondary small" disabled={(feedbackPage+1)*20>=feedbackCount||feedbackBusy} onClick={()=>setFeedbackPage(p=>p+1)}>Berikutnya</button></div></section>}
  </section>;
 }

@@ -1,3 +1,5 @@
+import { PUBLIC_CONTACT_EMAIL } from '@/lib/site-config';
+
 type SendEmailInput = { to: string; subject: string; html: string; text: string };
 
 export async function sendTransactionalEmail(input: SendEmailInput): Promise<{ ok: true } | { ok: false; error: string }> {
@@ -9,7 +11,7 @@ export async function sendTransactionalEmail(input: SendEmailInput): Promise<{ o
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ from, to: [input.to], subject: input.subject, html: input.html, text: input.text }),
+      body: JSON.stringify({ from, to: [input.to], subject: input.subject, html: input.html, text: input.text, reply_to: PUBLIC_CONTACT_EMAIL }),
       cache: 'no-store',
     });
     if (!response.ok) {
