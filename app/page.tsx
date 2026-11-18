@@ -176,26 +176,26 @@ export default function Home(){
  }
  async function logout(){if(supabase)await supabase.auth.signOut();setUser(null);setTeacherApplication(null);setChecked(false);setReviewing(false);setSelectedTopic(topics[0]);setExerciseId(learningQuestions[0].id);setWordIndex(0);setActiveTab('Latihan');setNotice('Kamu sudah keluar.');}
  return <main className="app-shell">
-  <aside className="sidebar"><a className="brand" href="#top"><span className="brand-owl"><Image width={54} height={54} src="/owl-mascot.svg" alt="Maskot burung hantu I'rab Labs"/></span><span><strong>I‘rab<span className="brand-green"> Labs</span></strong><small>PETUALANGAN NAHWU</small></span></a>
-   <div className="sidebar-label">RUANG PETUALANGAN</div><nav className="nav-list"><button className={`nav-item ${activeTab==='Latihan'?'active':''}`} onClick={()=>setActiveTab('Latihan')}><Icon>◎</Icon> Bedah kalimat</button><button className={`nav-item ${activeTab==='Materi'?'active':''}`} onClick={()=>{setSelectedRegion(null);setActiveTab('Materi');}}><Icon>▤</Icon> Materi Nahwu</button><button className={`nav-item ${activeTab==='Progres'?'active':''}`} onClick={()=>setActiveTab('Progres')}><Icon>▥</Icon> Progres belajar</button><button className={`nav-item ${activeTab==='Jadi Guru'?'active':''}`} onClick={()=>{setActiveTab('Jadi Guru');setTeacherFormMessage('');setTeacherForm(v=>({...v,fullName:v.fullName||user?.name||''}));}}><Icon>✉</Icon> Jadi Guru</button>{user&&user.role!=='Siswa'&&<button className={`nav-item ${activeTab==='Panel'?'active':''}`} onClick={()=>setActiveTab('Panel')}><Icon>⚙</Icon> Panel {user.role}</button>}<button className={`nav-item ${activeTab==='Hubungi Kami'?'active':''}`} onClick={()=>setActiveTab('Hubungi Kami')}><Icon>✎</Icon> Hubungi Kami</button></nav>
-   <div className="sidebar-spacer"/><div className="sidebar-note"><div className="note-icon">🦉</div><strong>Teman perjalananmu.</strong><p>Ikuti petunjuk, pahami susunan kalimat, dan taklukkan setiap tantangan Nahwu.</p></div><div className="sidebar-footer"><span className="status-dot"/> I‘rab Labs <span>•</span> Nahwu interaktif</div>
+  <aside className="sidebar"><a className="brand" href="#top"><span className="brand-owl"><Image width={54} height={54} src="/owl-mascot.svg" alt="Maskot burung hantu I'rab Labs"/></span><span><strong>I‘rab<span className="brand-green"> Labs</span></strong><small>LABORATORIUM NAHWU</small></span></a>
+   <div className="sidebar-label">NAVIGASI UTAMA</div><nav className="nav-list"><button className={`nav-item ${activeTab==='Latihan'?'active':''}`} onClick={()=>setActiveTab('Latihan')}><Icon>◎</Icon> Bedah kalimat</button><button className={`nav-item ${activeTab==='Materi'?'active':''}`} onClick={()=>{setSelectedRegion(null);setActiveTab('Materi');}}><Icon>▤</Icon> Materi Nahwu</button><button className={`nav-item ${activeTab==='Progres'?'active':''}`} onClick={()=>setActiveTab('Progres')}><Icon>▥</Icon> Progres belajar</button><button className={`nav-item ${activeTab==='Jadi Guru'?'active':''}`} onClick={()=>{setActiveTab('Jadi Guru');setTeacherFormMessage('');setTeacherForm(v=>({...v,fullName:v.fullName||user?.name||''}));}}><Icon>✉</Icon> Jadi Guru</button>{user&&user.role!=='Siswa'&&<button className={`nav-item ${activeTab==='Panel'?'active':''}`} onClick={()=>setActiveTab('Panel')}><Icon>⚙</Icon> Panel {user.role}</button>}<button className={`nav-item ${activeTab==='Hubungi Kami'?'active':''}`} onClick={()=>setActiveTab('Hubungi Kami')}><Icon>✎</Icon> Hubungi Kami</button></nav>
+   <div className="sidebar-spacer"/><div className="sidebar-note"><div className="note-icon">ن</div><strong>Belajar dengan memahami.</strong><p>Kenali fungsi setiap kata dan alasan di balik susunan kalimat.</p></div><div className="sidebar-footer"><span className="status-dot"/> I‘rab Labs <span>•</span> Nahwu interaktif</div>
   </aside>
   <section className="main-area" id="top"><header className="topbar"><div className="breadcrumb">Ruang belajar <span>/</span> <strong>{activeTab==='Latihan'?'Bedah kalimat':activeTab==='Materi'?(selectedRegion===null?'Dunia Nahwu':lessonGroups[selectedRegion]?.title||'Wilayah'):activeTab==='Progres'?'Progres belajar':activeTab==='Jadi Guru'?'Pengajuan menjadi guru':activeTab==='Hubungi Kami'?'Hubungi Kami':'Panel '+(user?.role||'')}</strong></div><div className="topbar-right"><span className="level-pill adventure-level-pill"><span>★</span> LEVEL {playerLevel} · {earnedXp} XP</span>{user?<><span className="user-chip"><span className="avatar">{user.role==='Admin'?'A':user.role==='Guru'?'G':'ط'}</span><span><b>{user.name}</b><small>{user.role} · akun online</small></span></span><button className="button-secondary small" onClick={logout}>Keluar</button></>:<><span className="guest-pill">PENGUNJUNG</span><button className="button-primary small" onClick={()=>{setShowLogin(true);setNotice('');}}>Masuk / Daftar</button></>}</div></header>
   <div className="page-content">
    <section className="welcome-hero adventure-hero">
     <div className="welcome-copy adventure-copy">
-     <span className="welcome-pill">🗺️ PETUALANGAN BELAJAR NAHWU</span>
-     <h1>Jelajahi dunia<br/><em>Nahwu dan I‘rab</em></h1>
-     <p>Ikuti perjalanan dari satu materi ke materi berikutnya. Selesaikan tantangan, pahami fungsi setiap kata, dan bangun penguasaan Nahwu selangkah demi selangkah.</p>
-     <div className="welcome-actions"><button className="button-primary" onClick={()=>setActiveTab('Latihan')}>Lanjutkan tantangan <span>↗</span></button><button className="button-secondary adventure-map-button" onClick={()=>{setSelectedRegion(null);setActiveTab('Materi');}}>Lihat peta materi</button></div>
-     <div className="welcome-tags"><span>✦ 23 submateri</span><span>✓ 69 tantangan</span><span>🦉 Didampingi maskot</span></div>
+     <span className="welcome-pill">RUANG BELAJAR NAHWU</span>
+     <h1>Pahami susunan<br/><em>Nahwu dan I‘rab</em></h1>
+     <p>Pelajari fungsi setiap kata melalui contoh dan latihan bertahap. Bangun pemahaman Nahwu dengan alur belajar yang jelas dan terarah.</p>
+     <div className="welcome-actions"><button className="button-primary" onClick={()=>setActiveTab('Latihan')}>Mulai latihan <span>↗</span></button><button className="button-secondary adventure-map-button" onClick={()=>{setSelectedRegion(null);setActiveTab('Materi');}}>Jelajahi materi</button></div>
+     <div className="welcome-tags"><span>23 submateri</span><span>69 latihan bertahap</span><span>Progres belajar tercatat</span></div>
     </div>
-    <div className="welcome-art adventure-art"><div className="owl-glow"></div><span className="art-spark spark-one">✦</span><span className="art-spark spark-two">✧</span><Image width={560} height={560} src="/owl-mascot.svg" alt="Burung hantu pendamping petualangan I'rab Labs"/><div className="mascot-bubble">Ayo, kita belajar! <span>✦</span></div><div className="floating-book">كِتَابُ النَّحْوِ</div><span className="owl-floating-star star-a">✧</span><span className="owl-floating-star star-b">★</span></div>
+    <div className="welcome-art adventure-art"><div className="owl-glow"></div><span className="art-spark spark-one">✦</span><span className="art-spark spark-two">✧</span><Image width={560} height={560} src="/owl-mascot.svg" alt="Burung hantu pendamping petualangan I'rab Labs"/><div className="mascot-bubble">Mari pahami satu per satu.</div><div className="floating-book">كِتَابُ النَّحْوِ</div><span className="owl-floating-star star-a">✧</span><span className="owl-floating-star star-b">★</span></div>
    </section>
    <section className="adventure-progress-card">
     <div className="adventure-level-emblem"><span>LEVEL</span><strong>{String(playerLevel).padStart(2,'0')}</strong></div>
-    <div className="adventure-progress-main"><div className="adventure-progress-heading"><div><span className="section-kicker">PERJALANANMU</span><h2>Penjelajah Nahwu</h2></div><strong>{earnedXp} XP</strong></div><div className="adventure-progress-track"><span style={{width:`${xpProgress}%`}}/></div><div className="adventure-progress-foot"><span>{xpInLevel} / 250 XP menuju level berikutnya</span><span>{masteredTopics} dari {topics.length} submateri dikuasai</span></div></div>
-    <div className="adventure-trophy"><span>🏆</span><strong>{masteredTopics}</strong><small>Materi tuntas</small></div>
+    <div className="adventure-progress-main"><div className="adventure-progress-heading"><div><span className="section-kicker">PROGRES BELAJAR</span><h2>Penguasaan materi</h2></div><strong>{earnedXp} XP</strong></div><div className="adventure-progress-track"><span style={{width:`${xpProgress}%`}}/></div><div className="adventure-progress-foot"><span>{xpInLevel} / 250 XP menuju level berikutnya</span><span>{masteredTopics} dari {topics.length} submateri dikuasai</span></div></div>
+    <div className="adventure-trophy"><span>✓</span><strong>{masteredTopics}</strong><small>Materi tuntas</small></div>
    </section>
    {user?.role==='Siswa'&&<p className="role-note">Nama dan progres belajarmu dapat dilihat oleh guru dan admin Irab Labs.</p>}
    {notice&&<div className="notice" role="status"><span>ⓘ</span>{notice}<button onClick={()=>setNotice('')} aria-label="Tutup">×</button></div>}
@@ -219,10 +219,10 @@ export default function Home(){
    </>}
    {activeTab==='Materi'&&<section className="adventure-world-page">
     {selectedRegion===null ? <>
-     <div className="world-page-heading"><div><span className="section-kicker">PETA PETUALANGAN</span><h2>Dunia Nahwu</h2><p>Jelajahi dunia, kunjungi wilayah, lalu selesaikan setiap level di dalamnya.</p></div><div className="world-progress-chip"><span>🏆</span><strong>{masteredTopics}/{topics.length}</strong><small>level tuntas</small></div></div>
+     <div className="world-page-heading"><div><span className="section-kicker">PETA MATERI</span><h2>Dunia Nahwu</h2><p>Kenali lima bab utama dan ikuti urutan materi untuk membangun pemahaman secara bertahap.</p></div><div className="world-progress-chip"><span>✓</span><strong>{masteredTopics}/{topics.length}</strong><small>materi tuntas</small></div></div>
      <div className="world-map-legend"><span><i className="legend-current"/>Sedang dijelajahi</span><span><i className="legend-open"/>Terbuka</span><span><i className="legend-done"/>Selesai</span><span><i className="legend-locked"/>Belum terbuka</span></div>
      <div className="world-map-shell">
-      <div className="world-map-topline"><span>🧭 PETA WILAYAH</span><span>5 RUMAH MATERI · {topics.length} LEVEL</span></div>
+      <div className="world-map-topline"><span>PETA PEMBELAJARAN</span><span>05 BAB · {topics.length} SUBMATERI</span></div>
       <div className="world-map-canvas">
        <svg className="world-map-route" viewBox="0 0 1100 650" preserveAspectRatio="none" aria-hidden="true">
         <defs>
@@ -260,9 +260,9 @@ export default function Home(){
         <g fill="#a9c9be" stroke="#78a99d" strokeWidth="3"><ellipse cx="930" cy="525" rx="68" ry="27"/><ellipse cx="930" cy="525" rx="43" ry="15" fill="#c4ded1"/></g>
         <g fill="#b0a58c" stroke="#877f6d" strokeWidth="2"><ellipse cx="885" cy="536" rx="17" ry="9"/><ellipse cx="966" cy="511" rx="15" ry="8"/><ellipse cx="1000" cy="539" rx="12" ry="7"/></g>
        </svg>
-       <div className="map-deco map-deco-mountain">⛰️</div><div className="map-deco map-deco-crystal">💎</div><div className="map-deco map-deco-camp">⛺</div><div className="map-deco map-deco-owl">🦉</div>
+       <div className="map-deco map-deco-mountain">01</div><div className="map-deco map-deco-crystal">02</div><div className="map-deco map-deco-camp">03</div><div className="map-deco map-deco-owl">04</div>
        <div className="map-rock map-rock-one"></div><div className="map-rock map-rock-two"></div><div className="map-rock map-rock-three"></div><div className="map-rock map-rock-four"></div>
-       <div className="map-tree map-tree-one">🌲</div><div className="map-tree map-tree-two">🌳</div><div className="map-tree map-tree-three">🌲</div><div className="map-tree map-tree-four">🌳</div>
+       <div className="map-tree map-tree-one"/><div className="map-tree map-tree-two"/><div className="map-tree map-tree-three"/><div className="map-tree map-tree-four"/>
        {lessonGroups.map((g,i)=>{
         const mastered=g.topics.filter(t=>topicScore(t,completed)>=80).length;
         const houseComplete=mastered===g.topics.length;
@@ -270,22 +270,22 @@ export default function Home(){
         const isCurrent=currentHouseIndex===i&&!houseComplete;
         const status=houseComplete?'TUNTAS':!houseUnlocked?'TERKUNCI':isCurrent?'LANJUTKAN':'TERBUKA';
         return <button key={g.title} className={`world-house-node region-${i+1} ${houseComplete?'house-complete':''} ${!houseUnlocked?'house-locked':''} ${isCurrent?'house-current':''}`} style={mapHousePositions[i]} onClick={()=>setSelectedRegion(i)} aria-label={`Buka ${g.title}, ${mastered} dari ${g.topics.length} level selesai`}>
-         <span className="house-node-status">{houseComplete?'✓':!houseUnlocked?'🔒':isCurrent?'★':'✦'} {status}</span>
-         <span className={`region-landmark-icon landmark-${i+1}`} aria-hidden="true">{['📜','🏛️','⛰️','🌳','🔭'][i]||'✨'}</span>
-         <strong>Wilayah {i+1}</strong><small>{g.title}</small><span className="house-node-progress">{mastered}/{g.topics.length} level</span>
+         <span className="house-node-status">{houseComplete?'✓':!houseUnlocked?'–':isCurrent?'•':'○'} {status}</span>
+         <span className={`region-landmark-icon landmark-${i+1}`} aria-hidden="true">{String(i+1).padStart(2,'0')}</span>
+         <strong>Bab {i+1}</strong><small>{g.title}</small><span className="house-node-progress">{mastered}/{g.topics.length} level</span>
         </button>;
        })}
       </div>
-      <div className="world-map-footer"><span>🪨 Ikuti jalur batu untuk berpindah wilayah.</span><span>Pilih wilayah untuk melihat level di dalamnya.</span></div>
+      <div className="world-map-footer"><span>Ikuti urutan bab untuk menjaga alur belajar.</span><span>Pilih bab untuk melihat submaterinya.</span></div>
      </div>
-     <div className="world-guide-card"><Image width={86} height={86} src="/owl-mascot.svg" alt="Burung hantu pemandu"/><div><strong>Petunjuk dari teman perjalananmu</strong><p>Setiap wilayah mewakili satu bab. Di dalamnya terdapat beberapa level sesuai subbab. Selesaikan level yang terbuka untuk membuka jalur selanjutnya. Level yang sudah tuntas tidak perlu diulang.</p></div></div>
+     <div className="world-guide-card"><Image width={86} height={86} src="/owl-mascot.svg" alt="Maskot I'rab Labs"/><div><strong>Cara menggunakan peta materi</strong><p>Setiap bagian mewakili satu bab. Pilih bab untuk melihat submateri di dalamnya. Materi terbuka secara berurutan setelah kamu mencapai nilai minimal yang ditentukan.</p></div></div>
     </> : selectedGroup && <div className="house-detail-page">
      <button className="back-world-button" onClick={()=>setSelectedRegion(null)}>← Kembali ke Dunia Nahwu</button>
      <div className={`house-detail-hero region-${selectedRegion+1}`}>
-      <div className="house-detail-visual"><div className={`region-landmark-icon region-landmark-large landmark-${selectedRegion+1}`} aria-hidden="true">{['📜','🏛️','⛰️','🌳','🔭'][selectedRegion]||'✨'}</div><div className="house-owl-guide"><Image width={112} height={112} src="/owl-mascot.svg" alt="Burung hantu pemandu"/></div></div>
-      <div className="house-detail-copy"><span className="section-kicker">RUMAH MATERI {String(selectedRegion+1).padStart(2,'0')} · BAB {selectedRegion+1}</span><h2>{selectedGroup.title}</h2><p>{selectedGroup.desc}</p><div className="house-detail-progress"><div><strong>{selectedGroup.topics.filter(t=>topicScore(t,completed)>=80).length}/{selectedGroup.topics.length}</strong><small>level selesai</small></div><div className="region-progress"><span style={{width:`${Math.round(selectedGroup.topics.filter(t=>topicScore(t,completed)>=80).length/selectedGroup.topics.length*100)}%`}}/></div></div></div>
+      <div className="house-detail-visual"><div className={`region-landmark-icon region-landmark-large landmark-${selectedRegion+1}`} aria-hidden="true">{String(selectedRegion+1).padStart(2,'0')}</div><div className="house-owl-guide"><Image width={112} height={112} src="/owl-mascot.svg" alt="Burung hantu pemandu"/></div></div>
+      <div className="house-detail-copy"><span className="section-kicker">BAB {String(selectedRegion+1).padStart(2,'0')}</span><h2>{selectedGroup.title}</h2><p>{selectedGroup.desc}</p><div className="house-detail-progress"><div><strong>{selectedGroup.topics.filter(t=>topicScore(t,completed)>=80).length}/{selectedGroup.topics.length}</strong><small>submateri selesai</small></div><div className="region-progress"><span style={{width:`${Math.round(selectedGroup.topics.filter(t=>topicScore(t,completed)>=80).length/selectedGroup.topics.length*100)}%`}}/></div></div></div>
      </div>
-     <div className="level-path-heading"><div><span className="section-kicker">JALUR PETUALANGAN</span><h2>Pilih level untuk mulai belajar</h2><p>Setiap level adalah satu subbab. Progres akan dilanjutkan dari kata yang belum selesai.</p></div><span className="library-count">{selectedGroup.topics.length} level</span></div>
+     <div className="level-path-heading"><div><span className="section-kicker">URUTAN MATERI</span><h2>Pilih submateri untuk mulai belajar</h2><p>Materi terbuka secara bertahap. Progres dilanjutkan dari bagian yang belum selesai.</p></div><span className="library-count">{selectedGroup.topics.length} level</span></div>
      <div className="level-path-list">
       {selectedGroup.topics.map((t,ti)=>{
        const score=topicScore(t,completed);
@@ -295,9 +295,9 @@ export default function Home(){
        const topicExercises=learningQuestions.filter(q=>q.topic===t);
        const doneQuestions=topicExercises.filter(q=>q.words.every((_,wi)=>completed.includes(`${q.id}:${wi}`))).length;
        return <div className={`level-path-item ${done?'level-done':''} ${!unlocked?'level-locked':''} ${isCurrent?'level-current':''}`} key={t}>
-        <div className="level-stone">{done?'✓':unlocked?String(ti+1).padStart(2,'0'):'🔒'}</div>
+        <div className="level-stone">{done?'✓':unlocked?String(ti+1).padStart(2,'0'):'–'}</div>
         <button className="level-card" disabled={progressLoading||!unlocked} onClick={()=>enterTopicLevel(t)}>
-         <span className="level-card-top"><span>LEVEL {String(ti+1).padStart(2,'0')}</span><span className={`level-status ${done?'done':unlocked?'open':'locked'}`}>{done?'✓ SELESAI':unlocked?(isCurrent?'★ LANJUTKAN':'TERBUKA'):'🔒 TERKUNCI'}</span></span>
+         <span className="level-card-top"><span>LEVEL {String(ti+1).padStart(2,'0')}</span><span className={`level-status ${done?'done':unlocked?'open':'locked'}`}>{done?'✓ SELESAI':unlocked?(isCurrent?'• LANJUTKAN':'TERBUKA'):'TERKUNCI'}</span></span>
          <strong>{t}</strong>
          <span className="level-card-bottom"><span>{done?'Nilai terbaik '+score+'/100':unlocked?'3 latihan · '+doneQuestions+'/3 selesai':'Selesaikan level sebelumnya'}</span><span>{done?'Ulangi':unlocked?'Masuk level →':'Terkunci'}</span></span>
          <span className="level-question-dots">{topicExercises.map((q,qi)=><i key={q.id} className={q.words.every((_,wi)=>completed.includes(`${q.id}:${wi}`))?'done':''}/>)}</span>
@@ -305,7 +305,7 @@ export default function Home(){
        </div>;
       })}
      </div>
-     <div className="house-detail-footer"><span>🦉</span><p>Level yang sudah kamu selesaikan akan tetap tersimpan. Saat kembali, kamu bisa melanjutkan dari bagian yang belum selesai atau mengulang level untuk berlatih lagi.</p></div>
+     <div className="house-detail-footer"><span>i</span><p>Progres materi yang sudah selesai akan tetap tersimpan. Kamu dapat melanjutkan dari bagian yang belum tuntas atau mengulang latihan untuk memperkuat pemahaman.</p></div>
     </div>}
    </section>}
    {activeTab==='Jadi Guru'&&<section className="content-panel">
@@ -341,7 +341,7 @@ export default function Home(){
     </section>
     <FeedbackForm/>
    </div>}
-   <footer className="main-footer"><span>بِسْمِ الْعِلْمِ نَبْدَأُ</span><p>I‘rab Labs · Belajar Nahwu dengan memahami alasan.</p><span className="footer-version">I‘RAB LABS · V0.9.4</span></footer>
+   <footer className="main-footer"><span>بِسْمِ الْعِلْمِ نَبْدَأُ</span><p>I‘rab Labs · Belajar Nahwu dengan memahami alasan.</p><span className="footer-version">I‘RAB LABS · V0.9.5</span></footer>
   </div></section>
   {showLogin&&<div className="modal-backdrop" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget)setShowLogin(false);}}><section className="login-modal" role="dialog" aria-modal="true" aria-labelledby="login-title"><button className="modal-close" onClick={()=>setShowLogin(false)} aria-label="Tutup">×</button><div className="modal-mark">بِ</div><div className="eyebrow">AKUN I‘RAB LABS</div><h2 id="login-title">Masuk ke ruang belajar</h2><p>{supabase?'Daftar atau masuk untuk menyimpan progres. Ingin menjadi guru? Ajukan melalui menu Jadi Guru setelah email terverifikasi; admin akan memeriksa pengajuan.':'Login belum tersedia. Pengunjung tetap bisa latihan dan review di browser ini.'}</p>{authMode==='signup'&&<label className="field"><span>Nama lengkap</span><input value={loginName} onChange={e=>setLoginName(e.target.value)} placeholder="Nama kamu"/></label>}<label className="field"><span>Email</span><input type="email" value={loginEmail} onChange={e=>setLoginEmail(e.target.value)} placeholder="nama@email.com"/></label><label className="field"><span>Kata sandi</span><input type="password" value={loginPassword} onChange={e=>setLoginPassword(e.target.value)} placeholder="Minimal sesuai aturan Supabase"/></label><div className="role-note">{authMode==='signup'?'Akun baru otomatis menjadi siswa. Setelah masuk dan memverifikasi email, kamu dapat mengajukan diri menjadi guru melalui menu Jadi Guru.':'Pengajuan guru memerlukan persetujuan admin. Gunakan menu Jadi Guru setelah masuk dengan email terverifikasi.'}</div>{notice&&<p className="notice" role="status">{notice}</p>}<button className="button-check" onClick={login}>{authMode==='signup'?'Daftar sebagai siswa →':'Masuk →'}</button><button className="feedback-link" onClick={()=>setAuthMode(authMode==='signin'?'signup':'signin')}>{authMode==='signin'?'Belum punya akun? Daftar sebagai siswa':'Sudah punya akun? Masuk'}</button><small className="modal-warning">{supabase?'Jaga kerahasiaan kata sandi akunmu.':'Riwayat pengunjung tersimpan di browser ini.'}</small></section></div>}
    {celebration&&<div className={`celebration-backdrop celebration-${celebration.kind}`} role="dialog" aria-modal="true" aria-labelledby="celebration-title" onClick={()=>setCelebration(null)}>

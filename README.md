@@ -1,6 +1,14 @@
-# I'rab Labs — v0.9.4
+# I'rab Labs — v0.9.5
 
 Aplikasi pembelajaran Nahwu dan latihan i‘rab interaktif berbasis Next.js 15, React 19, dan Supabase.
+
+
+## Identitas visual v0.9.5
+- Arah desain baru: **Soft Sky Blue + Creative Minimalist**.
+- Tata letak menggunakan tipografi editorial, ruang kosong yang lebih lega, garis pembatas tipis, dan aksen biru muda.
+- Ilustrasi maskot disesuaikan ke palet biru tanpa mengubah bentuk karakter.
+- Tampilan responsif untuk desktop dan smartphone.
+- Pembaruan ini berfokus pada presentasi visual. Alur autentikasi, data kurikulum, penilaian, progres, dan integrasi Supabase tetap menggunakan implementasi sebelumnya.
 
 ## Fitur pembelajaran
 - 69 soal untuk 23 submateri; setiap submateri berisi 3 soal progresif (Dasar, Menengah, Lanjutan).
