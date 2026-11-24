@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { useEffect, useMemo, useState, type FormEvent, type ReactNode } from 'react';
 import { wordKinds, caseStates, signs, type WordKind, type CaseState, type Sign } from '@/data/exercises';
+import { studyChapters } from '@/data/materials';
 import { lessonGroups,learningQuestions,positions,blank,getFoundationStage,gradeAnswer,expectedAnswer,topicUnlocked,topicScore,topics,type LearningExercise as Exercise,type Answer } from '@/data/curriculum';
 import { useLearningProgress } from '@/lib/use-learning-progress';
 import StaffPanel from './components/StaffPanel';
@@ -22,7 +23,7 @@ export default function Home(){
  const {answers,setAnswers,records,completed,record,loading:progressLoading,syncStatus,pendingCount,sync}=useLearningProgress(user?.id||null,!!user&&!!supabase);
  const [reviewing,setReviewing]=useState(false);
  const [showLogin,setShowLogin]=useState(false); const [loginName,setLoginName]=useState(''); const [loginEmail,setLoginEmail]=useState(''); const [loginPassword,setLoginPassword]=useState(''); const [authMode,setAuthMode]=useState<'signin'|'signup'>('signin'); const [inviteCode,setInviteCode]=useState('');
- const [activeTab,setActiveTab]=useState<'Latihan'|'Materi'|'Progres'|'Panel'|'Jadi Guru'|'Hubungi Kami'>('Latihan'); const [notice,setNotice]=useState(''); const [selectedRegion,setSelectedRegion]=useState<number|null>(null);
+ const [activeTab,setActiveTab]=useState<'Latihan'|'Materi'|'Progres'|'Panel'|'Jadi Guru'|'Hubungi Kami'>('Latihan'); const [notice,setNotice]=useState(''); const [selectedRegion,setSelectedRegion]=useState<number|null>(null); const [selectedMaterialIndex,setSelectedMaterialIndex]=useState<number|null>(null);
  const [celebration,setCelebration]=useState<{kind:'question'|'topic'|'finish';title:string;message:string}|null>(null);
  const [teacherForm,setTeacherForm]=useState({fullName:'',email:'',institution:'',experience:'',motivation:'',website:''}); const [teacherFormBusy,setTeacherFormBusy]=useState(false); const [teacherFormMessage,setTeacherFormMessage]=useState(''); const [teacherApplication,setTeacherApplication]=useState<TeacherApplicationSummary|null>(null); const [teacherApplicationLoading,setTeacherApplicationLoading]=useState(false);
  useEffect(()=>{
@@ -83,7 +84,6 @@ export default function Home(){
  const xpProgress=Math.round(xpInLevel/250*100);
  const masteredTopics=topics.filter(t=>topicScore(t,completed)>=80).length;
  const currentTopic=topics.find(t=>topicScore(t,completed)<80)||null;
- const currentHouseIndex=currentTopic?lessonGroups.findIndex(g=>g.topics.includes(currentTopic)):-1;
  const mapHousePositions=[{left:'10%',top:'69%'},{left:'30%',top:'43%'},{left:'52%',top:'68%'},{left:'72%',top:'34%'},{left:'89%',top:'59%'}];
  const selectedGroup=selectedRegion===null?null:lessonGroups[selectedRegion];
  const savedRecord=records[key];const correctAnswer=expectedAnswer(exercise,activeIndex);
@@ -177,7 +177,7 @@ export default function Home(){
  async function logout(){if(supabase)await supabase.auth.signOut();setUser(null);setTeacherApplication(null);setChecked(false);setReviewing(false);setSelectedTopic(topics[0]);setExerciseId(learningQuestions[0].id);setWordIndex(0);setActiveTab('Latihan');setNotice('Kamu sudah keluar.');}
  return <main className="app-shell">
   <aside className="sidebar"><a className="brand" href="#top"><span className="brand-owl"><Image width={54} height={54} src="/owl-mascot.svg" alt="Maskot burung hantu I'rab Labs"/></span><span><strong>I‘rab<span className="brand-green"> Labs</span></strong><small>LABORATORIUM NAHWU</small></span></a>
-   <div className="sidebar-label">NAVIGASI UTAMA</div><nav className="nav-list"><button className={`nav-item ${activeTab==='Latihan'?'active':''}`} onClick={()=>setActiveTab('Latihan')}><Icon>◎</Icon> Bedah kalimat</button><button className={`nav-item ${activeTab==='Materi'?'active':''}`} onClick={()=>{setSelectedRegion(null);setActiveTab('Materi');}}><Icon>▤</Icon> Materi Nahwu</button><button className={`nav-item ${activeTab==='Progres'?'active':''}`} onClick={()=>setActiveTab('Progres')}><Icon>▥</Icon> Progres belajar</button><button className={`nav-item ${activeTab==='Jadi Guru'?'active':''}`} onClick={()=>{setActiveTab('Jadi Guru');setTeacherFormMessage('');setTeacherForm(v=>({...v,fullName:v.fullName||user?.name||''}));}}><Icon>✉</Icon> Jadi Guru</button>{user&&user.role!=='Siswa'&&<button className={`nav-item ${activeTab==='Panel'?'active':''}`} onClick={()=>setActiveTab('Panel')}><Icon>⚙</Icon> Panel {user.role}</button>}<button className={`nav-item ${activeTab==='Hubungi Kami'?'active':''}`} onClick={()=>setActiveTab('Hubungi Kami')}><Icon>✎</Icon> Hubungi Kami</button></nav>
+   <div className="sidebar-label">NAVIGASI UTAMA</div><nav className="nav-list"><button className={`nav-item ${activeTab==='Latihan'?'active':''}`} onClick={()=>setActiveTab('Latihan')}><Icon>◎</Icon> Bedah kalimat</button><button className={`nav-item ${activeTab==='Materi'?'active':''}`} onClick={()=>{setSelectedRegion(null);setSelectedMaterialIndex(null);setActiveTab('Materi');}}><Icon>▤</Icon> Materi Nahwu</button><button className={`nav-item ${activeTab==='Progres'?'active':''}`} onClick={()=>setActiveTab('Progres')}><Icon>▥</Icon> Progres belajar</button><button className={`nav-item ${activeTab==='Jadi Guru'?'active':''}`} onClick={()=>{setActiveTab('Jadi Guru');setTeacherFormMessage('');setTeacherForm(v=>({...v,fullName:v.fullName||user?.name||''}));}}><Icon>✉</Icon> Jadi Guru</button>{user&&user.role!=='Siswa'&&<button className={`nav-item ${activeTab==='Panel'?'active':''}`} onClick={()=>setActiveTab('Panel')}><Icon>⚙</Icon> Panel {user.role}</button>}<button className={`nav-item ${activeTab==='Hubungi Kami'?'active':''}`} onClick={()=>setActiveTab('Hubungi Kami')}><Icon>✎</Icon> Hubungi Kami</button></nav>
    <div className="sidebar-spacer"/><div className="sidebar-note"><div className="note-icon">ن</div><strong>Belajar dengan memahami.</strong><p>Kenali fungsi setiap kata dan alasan di balik susunan kalimat.</p></div><div className="sidebar-footer"><span className="status-dot"/> I‘rab Labs <span>•</span> Nahwu interaktif</div>
   </aside>
   <section className="main-area" id="top"><header className="topbar"><div className="breadcrumb">Ruang belajar <span>/</span> <strong>{activeTab==='Latihan'?'Bedah kalimat':activeTab==='Materi'?(selectedRegion===null?'Dunia Nahwu':lessonGroups[selectedRegion]?.title||'Wilayah'):activeTab==='Progres'?'Progres belajar':activeTab==='Jadi Guru'?'Pengajuan menjadi guru':activeTab==='Hubungi Kami'?'Hubungi Kami':'Panel '+(user?.role||'')}</strong></div><div className="topbar-right"><span className="level-pill adventure-level-pill"><span>★</span> LEVEL {playerLevel} · {earnedXp} XP</span>{user?<><span className="user-chip"><span className="avatar">{user.role==='Admin'?'A':user.role==='Guru'?'G':'ط'}</span><span><b>{user.name}</b><small>{user.role} · akun online</small></span></span><button className="button-secondary small" onClick={logout}>Keluar</button></>:<><span className="guest-pill">PENGUNJUNG</span><button className="button-primary small" onClick={()=>{setShowLogin(true);setNotice('');}}>Masuk / Daftar</button></>}</div></header>
@@ -187,7 +187,7 @@ export default function Home(){
      <span className="welcome-pill">RUANG BELAJAR NAHWU</span>
      <h1>Pahami susunan<br/><em>Nahwu dan I‘rab</em></h1>
      <p>Pelajari fungsi setiap kata melalui contoh dan latihan bertahap. Bangun pemahaman Nahwu dengan alur belajar yang jelas dan terarah.</p>
-     <div className="welcome-actions"><button className="button-primary" onClick={()=>setActiveTab('Latihan')}>Mulai latihan <span>↗</span></button><button className="button-secondary adventure-map-button" onClick={()=>{setSelectedRegion(null);setActiveTab('Materi');}}>Jelajahi materi</button></div>
+     <div className="welcome-actions"><button className="button-primary" onClick={()=>setActiveTab('Latihan')}>Mulai latihan <span>↗</span></button><button className="button-secondary adventure-map-button" onClick={()=>{setSelectedRegion(null);setSelectedMaterialIndex(null);setActiveTab('Materi');}}>Jelajahi materi</button></div>
      <div className="welcome-tags"><span>23 submateri</span><span>69 latihan bertahap</span><span>Progres belajar tercatat</span></div>
     </div>
     <div className="welcome-art adventure-art"><div className="owl-glow"></div><span className="art-spark spark-one">✦</span><span className="art-spark spark-two">✧</span><Image width={560} height={560} src="/owl-mascot.svg" alt="Burung hantu pendamping petualangan I'rab Labs"/><div className="mascot-bubble">Mari pahami satu per satu.</div><div className="floating-book">كِتَابُ النَّحْوِ</div><span className="owl-floating-star star-a">✧</span><span className="owl-floating-star star-b">★</span></div>
@@ -219,10 +219,10 @@ export default function Home(){
    </>}
    {activeTab==='Materi'&&<section className="adventure-world-page">
     {selectedRegion===null ? <>
-     <div className="world-page-heading"><div><span className="section-kicker">PETA MATERI</span><h2>Dunia Nahwu</h2><p>Kenali lima bab utama dan ikuti urutan materi untuk membangun pemahaman secara bertahap.</p></div><div className="world-progress-chip"><span>✓</span><strong>{masteredTopics}/{topics.length}</strong><small>materi tuntas</small></div></div>
+     <div className="world-page-heading"><div><span className="section-kicker">PETA MATERI</span><h2>Dunia Nahwu</h2><p>Kenali lima bab utama dan ikuti urutan materi untuk membangun pemahaman secara bertahap.</p></div><div className="world-progress-chip"><span>✓</span><strong>{studyChapters.reduce((n,c)=>n+c.lessons.length,0)}</strong><small>materi tersedia</small></div></div>
      <div className="world-map-legend"><span><i className="legend-current"/>Sedang dijelajahi</span><span><i className="legend-open"/>Terbuka</span><span><i className="legend-done"/>Selesai</span><span><i className="legend-locked"/>Belum terbuka</span></div>
      <div className="world-map-shell">
-      <div className="world-map-topline"><span>PETA PEMBELAJARAN</span><span>05 BAB · {topics.length} SUBMATERI</span></div>
+      <div className="world-map-topline"><span>PETA PEMBELAJARAN</span><span>05 BAB · {studyChapters.reduce((n,c)=>n+c.lessons.length,0)} SUBMATERI</span></div>
       <div className="world-map-canvas">
        <svg className="world-map-route" viewBox="0 0 1100 650" preserveAspectRatio="none" aria-hidden="true">
         <defs>
@@ -264,48 +264,28 @@ export default function Home(){
        <div className="map-rock map-rock-one"></div><div className="map-rock map-rock-two"></div><div className="map-rock map-rock-three"></div><div className="map-rock map-rock-four"></div>
        <div className="map-tree map-tree-one"/><div className="map-tree map-tree-two"/><div className="map-tree map-tree-three"/><div className="map-tree map-tree-four"/>
        {lessonGroups.map((g,i)=>{
-        const mastered=g.topics.filter(t=>topicScore(t,completed)>=80).length;
-        const houseComplete=mastered===g.topics.length;
-        const houseUnlocked=canAccessAll||topicUnlocked(g.topics[0],completed);
-        const isCurrent=currentHouseIndex===i&&!houseComplete;
-        const status=houseComplete?'TUNTAS':!houseUnlocked?'TERKUNCI':isCurrent?'LANJUTKAN':'TERBUKA';
-        return <button key={g.title} className={`world-house-node region-${i+1} ${houseComplete?'house-complete':''} ${!houseUnlocked?'house-locked':''} ${isCurrent?'house-current':''}`} style={mapHousePositions[i]} onClick={()=>setSelectedRegion(i)} aria-label={`Buka ${g.title}, ${mastered} dari ${g.topics.length} level selesai`}>
+        const mastered=studyChapters[i].lessons.length;
+        const houseComplete=false;
+        const houseUnlocked=true;
+        const isCurrent=false;
+        const status='TERBUKA';
+        return <button key={g.title} className={`world-house-node region-${i+1} ${houseComplete?'house-complete':''} ${!houseUnlocked?'house-locked':''} ${isCurrent?'house-current':''}`} style={mapHousePositions[i]} onClick={()=>{setSelectedMaterialIndex(null);setSelectedRegion(i);}} aria-label={`Buka ${studyChapters[i].title}, ${mastered} submateri tersedia`}>
          <span className="house-node-status">{houseComplete?'✓':!houseUnlocked?'–':isCurrent?'•':'○'} {status}</span>
          <span className={`region-landmark-icon landmark-${i+1}`} aria-hidden="true">{String(i+1).padStart(2,'0')}</span>
-         <strong>Bab {i+1}</strong><small>{g.title}</small><span className="house-node-progress">{mastered}/{g.topics.length} level</span>
+         <strong>Bab {i+1}</strong><small>{g.title}</small><span className="house-node-progress">{mastered} submateri</span>
         </button>;
        })}
       </div>
-      <div className="world-map-footer"><span>Ikuti urutan bab untuk menjaga alur belajar.</span><span>Pilih bab untuk melihat submaterinya.</span></div>
+      <div className="world-map-footer"><span>Ikuti urutan bab untuk menjaga alur belajar.</span><span>Pilih bab untuk membaca materi dan contoh pembelajaran.</span></div>
      </div>
      <div className="world-guide-card"><Image width={86} height={86} src="/owl-mascot.svg" alt="Maskot I'rab Labs"/><div><strong>Cara menggunakan peta materi</strong><p>Setiap bagian mewakili satu bab. Pilih bab untuk melihat submateri di dalamnya. Materi terbuka secara berurutan setelah kamu mencapai nilai minimal yang ditentukan.</p></div></div>
     </> : selectedGroup && <div className="house-detail-page">
-     <button className="back-world-button" onClick={()=>setSelectedRegion(null)}>← Kembali ke Dunia Nahwu</button>
-     <div className={`house-detail-hero region-${selectedRegion+1}`}>
-      <div className="house-detail-visual"><div className={`region-landmark-icon region-landmark-large landmark-${selectedRegion+1}`} aria-hidden="true">{String(selectedRegion+1).padStart(2,'0')}</div><div className="house-owl-guide"><Image width={112} height={112} src="/owl-mascot.svg" alt="Burung hantu pemandu"/></div></div>
-      <div className="house-detail-copy"><span className="section-kicker">BAB {String(selectedRegion+1).padStart(2,'0')}</span><h2>{selectedGroup.title}</h2><p>{selectedGroup.desc}</p><div className="house-detail-progress"><div><strong>{selectedGroup.topics.filter(t=>topicScore(t,completed)>=80).length}/{selectedGroup.topics.length}</strong><small>submateri selesai</small></div><div className="region-progress"><span style={{width:`${Math.round(selectedGroup.topics.filter(t=>topicScore(t,completed)>=80).length/selectedGroup.topics.length*100)}%`}}/></div></div></div>
-     </div>
-     <div className="level-path-heading"><div><span className="section-kicker">URUTAN MATERI</span><h2>Pilih submateri untuk mulai belajar</h2><p>Materi terbuka secara bertahap. Progres dilanjutkan dari bagian yang belum selesai.</p></div><span className="library-count">{selectedGroup.topics.length} level</span></div>
-     <div className="level-path-list">
-      {selectedGroup.topics.map((t,ti)=>{
-       const score=topicScore(t,completed);
-       const done=score>=80;
-       const unlocked=canAccessAll||topicUnlocked(t,completed);
-       const isCurrent=t===currentTopic;
-       const topicExercises=learningQuestions.filter(q=>q.topic===t);
-       const doneQuestions=topicExercises.filter(q=>q.words.every((_,wi)=>completed.includes(`${q.id}:${wi}`))).length;
-       return <div className={`level-path-item ${done?'level-done':''} ${!unlocked?'level-locked':''} ${isCurrent?'level-current':''}`} key={t}>
-        <div className="level-stone">{done?'✓':unlocked?String(ti+1).padStart(2,'0'):'–'}</div>
-        <button className="level-card" disabled={progressLoading||!unlocked} onClick={()=>enterTopicLevel(t)}>
-         <span className="level-card-top"><span>LEVEL {String(ti+1).padStart(2,'0')}</span><span className={`level-status ${done?'done':unlocked?'open':'locked'}`}>{done?'✓ SELESAI':unlocked?(isCurrent?'• LANJUTKAN':'TERBUKA'):'TERKUNCI'}</span></span>
-         <strong>{t}</strong>
-         <span className="level-card-bottom"><span>{done?'Nilai terbaik '+score+'/100':unlocked?'3 latihan · '+doneQuestions+'/3 selesai':'Selesaikan level sebelumnya'}</span><span>{done?'Ulangi':unlocked?'Masuk level →':'Terkunci'}</span></span>
-         <span className="level-question-dots">{topicExercises.map((q,qi)=><i key={q.id} className={q.words.every((_,wi)=>completed.includes(`${q.id}:${wi}`))?'done':''}/>)}</span>
-        </button>
-       </div>;
-      })}
-     </div>
-     <div className="house-detail-footer"><span>i</span><p>Progres materi yang sudah selesai akan tetap tersimpan. Kamu dapat melanjutkan dari bagian yang belum tuntas atau mengulang latihan untuk memperkuat pemahaman.</p></div>
+     <button className="back-world-button" onClick={()=>{if(selectedMaterialIndex!==null)setSelectedMaterialIndex(null);else setSelectedRegion(null);}}>← {selectedMaterialIndex!==null?'Kembali ke daftar submateri':'Kembali ke Dunia Nahwu'}</button>
+     {selectedMaterialIndex===null ? <>
+      <div className={`house-detail-hero region-${selectedRegion+1}`}><div className="house-detail-visual"><div className={`region-landmark-icon region-landmark-large landmark-${selectedRegion+1}`} aria-hidden="true">{String(selectedRegion+1).padStart(2,'0')}</div><div className="house-owl-guide"><Image width={112} height={112} src="/owl-mascot.svg" alt="Burung hantu pemandu"/></div></div><div className="house-detail-copy"><span className="section-kicker">BAB {String(selectedRegion+1).padStart(2,'0')}</span><h2>{studyChapters[selectedRegion].title}</h2><p>{studyChapters[selectedRegion].description}</p><div className="house-detail-progress"><div><strong>{studyChapters[selectedRegion].lessons.length}</strong><small>submateri tersedia</small></div><div className="region-progress"><span style={{width:'100%'}}/></div></div></div></div>
+      <div className="level-path-heading"><div><span className="section-kicker">BAHAN PEMBELAJARAN</span><h2>Pilih submateri untuk dipelajari</h2><p>Baca penjelasan dan contoh terlebih dahulu, lalu lanjutkan ke latihan Bedah Kalimat.</p></div><span className="library-count">{studyChapters[selectedRegion].lessons.length} submateri</span></div>
+      <div className="study-lesson-list">{studyChapters[selectedRegion].lessons.map((lesson,li)=><button className="study-lesson-card" key={lesson.title} onClick={()=>setSelectedMaterialIndex(li)}><span className="study-lesson-number">{String(li+1).padStart(2,'0')}</span><span className="study-lesson-copy"><strong>{lesson.title}</strong><small>{lesson.content[0]}</small></span><span className="study-lesson-arrow">Baca materi →</span></button>)}</div>
+     </> : (()=>{const lesson=studyChapters[selectedRegion].lessons[selectedMaterialIndex];const practiceTopics=[['Isim, fi‘il, huruf','Mu‘rab dan mabnī','Ma‘rifah dan nakirah','Mufrad, mutsanna, jamak'],['Mubtada’ dan khabar','Khabar mufrad, jumlah, syibh jumlah','Kāna wa akhawātuhā','Inna wa akhawātuhā'],['Fi‘il māḍī, muḍāri‘, amr','Fā‘il dan nā’ib al-fā‘il','Maf‘ūl bih','Maf‘ūl muṭlaq, li-ajlih, fīh','Maf‘ūl muṭlaq, li-ajlih, fīh','Maf‘ūl muṭlaq, li-ajlih, fīh'],['Na‘t dan man‘ūt','‘Aṭaf dan ma‘ṭūf','Taukīd','Badal','Muḍāf dan muḍāf ilaih'],['Huruf jar dan isim majrūr','Fi‘il muḍāri‘ manṣūb','Fi‘il muḍāri‘ majzūm','Ḥāl dan tamyīz','Ḥāl dan tamyīz','Istitsnā’ dan munādā','Istitsnā’ dan munādā']];const practiceTopic=practiceTopics[selectedRegion][selectedMaterialIndex];const hasPractice=topics.includes(practiceTopic);return <article className="study-reader"><div className="study-reader-meta"><span>BAB {String(selectedRegion+1).padStart(2,'0')}</span><span>SUBMATERI {String(selectedMaterialIndex+1).padStart(2,'0')}</span></div><h2>{lesson.title}</h2><div className="study-reader-body">{lesson.content.map((paragraph,pi)=><p key={pi}>{paragraph}</p>)}{lesson.notes&&<div className="study-notes"><strong>Catatan dan contoh</strong><ul>{lesson.notes.map((note,ni)=><li key={ni}>{note}</li>)}</ul></div>}{lesson.arabic&&<div className="study-example"><span>CONTOH KALIMAT BAHASA ARAB</span><strong dir="rtl" lang="ar">{lesson.arabic}</strong>{lesson.translation&&<p>Artinya: {lesson.translation}</p>}</div>}</div><div className="study-reader-actions"><button className="button-secondary" onClick={()=>setSelectedMaterialIndex(Math.max(0,selectedMaterialIndex-1))} disabled={selectedMaterialIndex===0}>← Submateri sebelumnya</button>{hasPractice&&<button className="button-primary" onClick={()=>{setSelectedMaterialIndex(null);enterTopicLevel(practiceTopic);}}>Latihan Bedah Kalimat →</button>}</div><div className="study-reader-pagination"><span>{selectedMaterialIndex+1} dari {studyChapters[selectedRegion].lessons.length} submateri</span><button onClick={()=>setSelectedMaterialIndex(Math.min(studyChapters[selectedRegion].lessons.length-1,selectedMaterialIndex+1))} disabled={selectedMaterialIndex===studyChapters[selectedRegion].lessons.length-1}>Materi berikutnya →</button></div></article>})()}
     </div>}
    </section>}
    {activeTab==='Jadi Guru'&&<section className="content-panel">
@@ -341,7 +321,7 @@ export default function Home(){
     </section>
     <FeedbackForm/>
    </div>}
-   <footer className="main-footer"><span>بِسْمِ الْعِلْمِ نَبْدَأُ</span><p>I‘rab Labs · Belajar Nahwu dengan memahami alasan.</p><span className="footer-version">I‘RAB LABS · V0.9.5</span></footer>
+   <footer className="main-footer"><span>بِسْمِ الْعِلْمِ نَبْدَأُ</span><p>I‘rab Labs · Belajar Nahwu dengan memahami alasan.</p><span className="footer-version">I‘RAB LABS · V0.9.7</span></footer>
   </div></section>
   {showLogin&&<div className="modal-backdrop" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget)setShowLogin(false);}}><section className="login-modal" role="dialog" aria-modal="true" aria-labelledby="login-title"><button className="modal-close" onClick={()=>setShowLogin(false)} aria-label="Tutup">×</button><div className="modal-mark">بِ</div><div className="eyebrow">AKUN I‘RAB LABS</div><h2 id="login-title">Masuk ke ruang belajar</h2><p>{supabase?'Daftar atau masuk untuk menyimpan progres. Ingin menjadi guru? Ajukan melalui menu Jadi Guru setelah email terverifikasi; admin akan memeriksa pengajuan.':'Login belum tersedia. Pengunjung tetap bisa latihan dan review di browser ini.'}</p>{authMode==='signup'&&<label className="field"><span>Nama lengkap</span><input value={loginName} onChange={e=>setLoginName(e.target.value)} placeholder="Nama kamu"/></label>}<label className="field"><span>Email</span><input type="email" value={loginEmail} onChange={e=>setLoginEmail(e.target.value)} placeholder="nama@email.com"/></label><label className="field"><span>Kata sandi</span><input type="password" value={loginPassword} onChange={e=>setLoginPassword(e.target.value)} placeholder="Minimal sesuai aturan Supabase"/></label><div className="role-note">{authMode==='signup'?'Akun baru otomatis menjadi siswa. Setelah masuk dan memverifikasi email, kamu dapat mengajukan diri menjadi guru melalui menu Jadi Guru.':'Pengajuan guru memerlukan persetujuan admin. Gunakan menu Jadi Guru setelah masuk dengan email terverifikasi.'}</div>{notice&&<p className="notice" role="status">{notice}</p>}<button className="button-check" onClick={login}>{authMode==='signup'?'Daftar sebagai siswa →':'Masuk →'}</button><button className="feedback-link" onClick={()=>setAuthMode(authMode==='signin'?'signup':'signin')}>{authMode==='signin'?'Belum punya akun? Daftar sebagai siswa':'Sudah punya akun? Masuk'}</button><small className="modal-warning">{supabase?'Jaga kerahasiaan kata sandi akunmu.':'Riwayat pengunjung tersimpan di browser ini.'}</small></section></div>}
    {celebration&&<div className={`celebration-backdrop celebration-${celebration.kind}`} role="dialog" aria-modal="true" aria-labelledby="celebration-title" onClick={()=>setCelebration(null)}>

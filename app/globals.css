@@ -680,3 +680,32 @@ body{background:radial-gradient(ellipse at 92% 5%,rgba(226,211,163,.18),transpar
 .teacher-application-admin-card .application-actions{margin-top:12px}
 @media(max-width:900px){.contact-page{grid-template-columns:1fr}}
 @media(max-width:600px){.contact-email-card{align-items:flex-start}.contact-email-card strong{font-size:11px}.teacher-application-admin-card{padding:13px}.teacher-application-admin-card .section-heading{gap:8px}}
+
+/* v0.9.7 — Materi teori yang dapat dibaca sebelum latihan */
+.study-lesson-list{display:grid;gap:12px;margin:18px 0 28px}
+.study-lesson-card{display:flex;align-items:center;gap:15px;width:100%;padding:17px 19px;text-align:left;border:1px solid #e7e5d9;border-radius:16px;background:rgba(255,254,250,.96);color:var(--ink);box-shadow:0 7px 20px rgba(43,77,53,.035);cursor:pointer;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
+.study-lesson-card:hover{transform:translateY(-2px);border-color:#b9d5b8;box-shadow:0 12px 25px rgba(43,77,53,.08)}
+.study-lesson-number{display:grid;place-items:center;flex:0 0 43px;height:43px;border-radius:13px;background:#edf5e8;color:#38734d;font-weight:800;font-size:13px}
+.study-lesson-copy{display:grid;gap:5px;min-width:0;flex:1}
+.study-lesson-copy strong{font-size:14px;color:#294b37}
+.study-lesson-copy small{font-size:11px;line-height:1.65;color:#77877c;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.study-lesson-arrow{font-size:11px;font-weight:700;color:#3e8057;white-space:nowrap}
+.study-reader{max-width:900px;margin:20px auto 30px;padding:clamp(20px,4vw,42px);border:1px solid #e8e5d9;border-radius:22px;background:rgba(255,254,250,.98);box-shadow:0 12px 34px rgba(43,77,53,.055)}
+.study-reader-meta{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:17px}
+.study-reader-meta span{padding:6px 10px;border-radius:99px;background:#edf5e8;color:#47744e;font-size:9px;font-weight:800;letter-spacing:1px}
+.study-reader h2{font-size:clamp(23px,3vw,31px);line-height:1.35;color:#244b36;margin:0 0 23px;letter-spacing:-.6px}
+.study-reader-body{font-size:14px;line-height:1.95;color:#526458}
+.study-reader-body>p{margin:0 0 14px}
+.study-notes{margin:22px 0;padding:18px 20px;border:1px solid #e5eadc;border-radius:14px;background:#f6f9f1}
+.study-notes>strong{display:block;margin-bottom:8px;color:#315c3d;font-size:12px}
+.study-notes ul{margin:0;padding-left:19px}
+.study-notes li{padding:3px 0;font-size:13px}
+.study-example{margin:22px 0;padding:22px;border:1px solid #eadfbe;border-radius:16px;background:#fffaf0;text-align:center}
+.study-example>span{display:block;margin-bottom:14px;color:#94773d;font-size:9px;font-weight:800;letter-spacing:1.2px}
+.study-example>strong{display:block;color:#274b36;font-family:'Amiri','Noto Naskh Arabic',serif;font-size:clamp(25px,4vw,36px);line-height:1.9}
+.study-example>p{margin:8px 0 0;color:#647468;font-size:12px}
+.study-reader-actions,.study-reader-pagination{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:25px}
+.study-reader-pagination{border-top:1px solid #eceade;padding-top:16px;color:#899489;font-size:10px}
+.study-reader-pagination button{border:0;background:transparent;color:#38734d;font-size:11px;font-weight:700;cursor:pointer}
+.study-reader-pagination button:disabled,.study-reader-actions button:disabled{opacity:.4;cursor:not-allowed}
+@media(max-width:600px){.study-lesson-card{align-items:flex-start;padding:14px}.study-lesson-arrow{font-size:0}.study-lesson-arrow::after{content:'→';font-size:17px}.study-reader-actions{align-items:stretch;flex-direction:column}.study-reader-actions button{width:100%}}
